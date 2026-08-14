@@ -15,10 +15,10 @@
   "homepage": "https://fandcode.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/7757/FAN-Browser-Agent.git"
+    "url": "git+https://github.com/7757/Fan-Browser-Agent.git"
   },
   "bugs": {
-    "url": "https://github.com/7757/FAN-Browser-Agent/issues"
+    "url": "https://github.com/7757/Fan-Browser-Agent/issues"
   },
   "dependencies": {
     "@streamdown/math": "^1.0.2",

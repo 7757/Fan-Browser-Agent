@@ -77,8 +77,8 @@ Requirements:
 Run from source:
 
 ```bash
-git clone https://github.com/7757/FAN-Browser-Agent.git
-cd FAN-Browser-Agent
+git clone https://github.com/7757/Fan-Browser-Agent.git
+cd Fan-Browser-Agent
 npm run dev
 ```
 
@@ -189,7 +189,7 @@ npm --prefix apps/desktop run lint
 
 Desktop packages are built with `dist:mac`, `dist:win`, or `dist:linux` from `apps/desktop`. Release builds require a Git commit so packaged artifacts can be traced back to their source.
 
-Use [Issues](https://github.com/7757/FAN-Browser-Agent/issues) to report problems or propose features. Pull requests are welcome. Describe the purpose and impact of your change, list the checks you completed, and include a screenshot or recording for visible UI changes.
+Use [Issues](https://github.com/7757/Fan-Browser-Agent/issues) to report problems or propose features. Pull requests are welcome. Describe the purpose and impact of your change, list the checks you completed, and include a screenshot or recording for visible UI changes.
 
 ## Troubleshooting
 

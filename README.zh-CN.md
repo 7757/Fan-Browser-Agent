@@ -77,8 +77,8 @@ Fan 最先是为了帮助作者自己完成工作而开发的。现在把它开�
 从源码启动：
 
 ```bash
-git clone https://github.com/7757/FAN-Browser-Agent.git
-cd FAN-Browser-Agent
+git clone https://github.com/7757/Fan-Browser-Agent.git
+cd Fan-Browser-Agent
 npm run dev
 ```
 
@@ -189,7 +189,17 @@ npm --prefix apps/desktop run lint
 
 桌面安装包通过 `apps/desktop` 中的 `dist:mac`、`dist:win` 或 `dist:linux` 构建。正式构建需要 Git commit，以便准确标识安装包对应的源码。
 
-欢迎通过 [Issues](https://github.com/7757/FAN-Browser-Agent/issues) 报告问题或提出功能建议，也欢迎提交 Pull Request。提交代码时，请说明修改目的、影响范围以及你完成的检查；涉及界面变化时请附截图或录屏。
+欢迎通过 [Issues](https://github.com/7757/Fan-Browser-Agent/issues) 报告问题或提出功能建议，也欢迎提交 Pull Request。提交代码时，请说明修改目的、影响范围以及你完成的检查；涉及界面变化时请附截图或录屏。
+
+## 联系作者
+
+如果你在使用 Fan 时遇到问题，或者对 browser agent、computer use、human-in-the-loop 交互和本地 AI 工具有好的想法，欢迎提交 Issue，也可以添加作者微信直接交流。
+
+添加时请备注 **Fan Browser Agent**。
+
+<p align="center">
+  <img src="logo/wechat-7757.png" alt="Fan 作者 7757 的微信二维码" width="360">
+</p>
 
 ## 故障排除
 

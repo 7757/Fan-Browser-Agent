@@ -182,8 +182,8 @@ fan = "fan_cli.main:main"
 
 [project.urls]
 Homepage = "https://fandcode.com"
-Repository = "https://github.com/7757/FAN-Browser-Agent"
-Issues = "https://github.com/7757/FAN-Browser-Agent/issues"
+Repository = "https://github.com/7757/Fan-Browser-Agent"
+Issues = "https://github.com/7757/Fan-Browser-Agent/issues"
 
 [tool.setuptools]
 py-modules = ["run_agent", "model_tools", "toolsets", "cli", "fan_bootstrap", "fan_constants", "fan_state", "fan_time", "fan_logging", "utils"]
