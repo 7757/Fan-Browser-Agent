@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>表单事务验证 — 稳定与动态表单</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100dvh;
+    background: #f4f6fa;
+    color: #1f2733;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.6;
+  }
+  .notice-bar {
+    background: #1f6feb;
+    color: #fff;
+    padding: 10px 16px;
+    text-align: center;
+    font-size: 14px;
+    letter-spacing: .5px;
+  }
+  .page-head, main {
+    width: min(960px, calc(100% - 40px));
+    margin-inline: auto;
+  }
+  .page-head { margin-top: 28px; }
+  .page-head h1 { font-size: 24px; }
+  .page-head p { margin-top: 4px; color: #5b6572; font-size: 14px; }
+  .expectation {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border: 1px solid #c9d9f8;
+    border-radius: 10px;
+    background: #eef4ff;
+    color: #284f91;
+    font-size: 13px;
+  }
+  main {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 22px;
+    padding-bottom: 48px;
+  }
+  .card {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid #e4e8ef;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(20, 32, 55, .05);
+  }
+  .card h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+  }
+  .tag {
+    padding: 1px 8px;
+    border-radius: 6px;
+    background: #eef3fd;
+    color: #1f6feb;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .desc { margin-top: 6px; color: #5b6572; font-size: 13px; }
+  .test-rule {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-left: 3px solid #1f6feb;
+    background: #f7f9fc;
+    color: #465161;
+    font-size: 12.5px;
+  }
+  form { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  label { color: #3a4351; font-size: 13px; font-weight: 600; }
+  input[type=text] {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #d4dae3;
+    border-radius: 8px;
+    background: #fff;
+    color: #1f2733;
+    outline: none;
+    font-size: 14px;
+  }
+  input[type=text]:focus {
+    border-color: #1f6feb;
+    box-shadow: 0 0 0 3px rgba(31, 111, 235, .12);
+  }
+  .fixed-code {
+    display: inline-flex;
+    align-self: flex-start;
+    margin-top: 3px;
+    padding: 5px 11px;
+    border: 1px dashed #9fb8e8;
+    border-radius: 7px;
+    background: #f7faff;
+    color: #174ea6;
+    font: 700 17px/1.2 Menlo, Consolas, monospace;
+    letter-spacing: 3px;
+  }
+  .help { color: #7a8492; font-size: 12px; }
+  button {
+    min-height: 40px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 8px;
+    background: #1f6feb;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  button:hover { background: #175cd3; }
+  button.secondary { background: #eef1f6; color: #3a4351; }
+  button.secondary:hover { background: #e2e7ef; }
+  .actions { display: flex; flex-wrap: wrap; gap: 9px; }
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 11px;
+    border: 1px solid #c9d9f8;
+    border-radius: 9px;
+    background: #f7faff;
+  }
+  .suggestions[hidden] { display: none; }
+  .suggestions button {
+    min-height: 34px;
+    padding-inline: 13px;
+    border: 1px solid #b9caea;
+    background: #fff;
+    color: #2457a6;
+    font-size: 13px;
+  }
+  .suggestions button:hover { background: #eaf2ff; }
+  .result {
+    margin-top: 16px;
+    padding: 11px 13px;
+    border: 1px solid #e0e5ed;
+    border-radius: 8px;
+    background: #f7f8fa;
+    color: #667180;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .result.ok { border-color: #b8e6c9; background: #e7f7ec; color: #16794c; }
+  .result.err { border-color: #f5c6c2; background: #fdecec; color: #c0392b; }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .metric {
+    padding: 9px 10px;
+    border: 1px solid #e7ebf1;
+    border-radius: 8px;
+    background: #fbfcfe;
+  }
+  .metric span { display: block; color: #7a8492; font-size: 11px; }
+  .metric output { color: #263243; font: 700 16px/1.3 Menlo, Consolas, monospace; }
+  .metric.danger output { color: #c0392b; }
+  details { margin-top: 14px; color: #5b6572; font-size: 12px; }
+  details summary { cursor: pointer; font-weight: 600; }
+  .event-log { margin: 8px 0 0 20px; }
+  .event-log li { margin-top: 4px; }
+  .page-foot {
+    grid-column: 1 / -1;
+    color: #758090;
+    text-align: center;
+    font-size: 12.5px;
+  }
+  .page-foot a { color: #2563eb; }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="notice-bar">Fan Browser-Agent 表单事务 E2E 专项测试</div>
+
+<header class="page-head">
+  <h1>稳定表单与动态表单验证</h1>
+  <p>两个案例互不影响，可重复重置。所有数据仅保存在当前页面内。</p>
+  <div class="expectation">
+    验收标准：案例 A 应一次完成“输入 + 确认”；案例 B 输入后必须先读取新页面、选择建议，再确认。
+    案例 B 的“误提交数”在正确流程中必须始终为 0。
+  </div>
+</header>
+
+<main>
+  <section class="card" id="stable-case" data-fixture-kind="stable">
+    <h2><span class="tag">A</span>普通稳定验证码</h2>
+    <p class="desc">输入不会新增、删除或替换任何表单控件，确认按钮从一开始就存在且可用。</p>
+    <div class="test-rule">推荐口令：填写固定验证码 2468，然后点击“确认稳定表单”。</div>
+
+    <form id="stable-form" novalidate>
+      <div class="field">
+        <label for="stable-code-input">固定验证码</label>
+        <span class="fixed-code" id="stable-code" aria-label="固定验证码 2468">2468</span>
+        <input
+          type="text"
+          id="stable-code-input"
+          name="stableCode"
+          inputmode="numeric"
+          maxlength="4"
+          autocomplete="off"
+          placeholder="请输入 2468"
+          data-form-behavior="stable"
+        >
+        <span class="help">该字段的 input 事件只记内存计数，不改变页面结构。</span>
+      </div>
+      <div class="actions">
+        <button type="submit" id="stable-submit" data-generation="initial">确认稳定表单</button>
+        <button type="button" class="secondary" id="stable-reset">重置案例 A</button>
+      </div>
+    </form>
+
+    <div class="result" id="stable-result" role="status" data-state="idle">等待操作</div>
+    <div class="metrics" aria-label="案例 A 计数器">
+      <div class="metric"><span>输入事件数</span><output id="stable-input-events">0</output></div>
+      <div class="metric"><span>提交尝试数</span><output id="stable-submit-attempts">0</output></div>
+      <div class="metric"><span>成功提交数</span><output id="stable-success-count">0</output></div>
+      <div class="metric"><span>最终状态</span><output id="stable-final-state">idle</output></div>
+    </div>
+    <details>
+      <summary>事件记录</summary>
+      <ol class="event-log" id="stable-event-log"><li>尚无事件</li></ol>
+    </details>
+  </section>
+
+  <section class="card" id="dynamic-case" data-fixture-kind="dynamic">
+    <h2><span class="tag">B</span>动态建议与按钮替换</h2>
+    <p class="desc">输入城市关键字后，页面会同步新增建议列表，并用一个新 DOM 节点替换原确认按钮。</p>
+    <div class="test-rule">推荐口令：输入“上”，根据新页面选择“上海”，最后点击更新后的确认按钮。</div>
+
+    <form id="dynamic-form" novalidate>
+      <div class="field">
+        <label for="dynamic-city-input">城市关键字（输入后页面结构会变化）</label>
+        <input
+          type="text"
+          id="dynamic-city-input"
+          name="cityQuery"
+          autocomplete="off"
+          placeholder="例如：上"
+          aria-describedby="dynamic-help"
+          aria-autocomplete="list"
+          aria-haspopup="listbox"
+          aria-controls="dynamic-suggestions"
+          aria-expanded="false"
+          data-form-behavior="dynamic"
+        >
+        <span class="help" id="dynamic-help">必须从输入后出现的建议中选一个城市，不能直接提交输入文本。</span>
+      </div>
+      <div class="suggestions" id="dynamic-suggestions" role="listbox" aria-label="城市建议" hidden></div>
+      <div class="actions" id="dynamic-submit-slot">
+        <button type="submit" id="dynamic-submit" data-generation="initial">确认动态表单（初始）</button>
+        <button type="button" class="secondary" id="dynamic-reset">重置案例 B</button>
+      </div>
+    </form>
+
+    <div class="result" id="dynamic-result" role="status" data-state="idle">等待输入；误提交数应保持为 0</div>
+    <div class="metrics" aria-label="案例 B 计数器">
+      <div class="metric"><span>输入事件数</span><output id="dynamic-input-events">0</output></div>
+      <div class="metric"><span>建议生成数</span><output id="dynamic-suggestion-renders">0</output></div>
+      <div class="metric"><span>按钮替换数</span><output id="dynamic-button-replacements">0</output></div>
+      <div class="metric"><span>建议选择数</span><output id="dynamic-option-selections">0</output></div>
+      <div class="metric"><span>提交尝试数</span><output id="dynamic-submit-attempts">0</output></div>
+      <div class="metric danger"><span>误提交数</span><output id="dynamic-premature-submits">0</output></div>
+      <div class="metric"><span>成功提交数</span><output id="dynamic-success-count">0</output></div>
+      <div class="metric"><span>最终状态</span><output id="dynamic-final-state">idle</output></div>
+    </div>
+    <details>
+      <summary>事件记录</summary>
+      <ol class="event-log" id="dynamic-event-log"><li>尚无事件</li></ol>
+    </details>
+  </section>
+
+  <p class="page-foot"><a href="/">← 返回信息收集测试站首页</a></p>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  const state = {
+    stable: {
+      inputEvents: 0,
+      submitAttempts: 0,
+      successCount: 0,
+      finalState: 'idle'
+    },
+    dynamic: {
+      inputEvents: 0,
+      suggestionRenders: 0,
+      buttonReplacements: 0,
+      optionSelections: 0,
+      submitAttempts: 0,
+      prematureSubmits: 0,
+      successCount: 0,
+      finalState: 'idle',
+      selectedCity: ''
+    }
+  };
+
+  // 便于桌面 DevTools 或后续自动化直接读取确定性状态；页面不接受外部写入。
+  Object.defineProperty(window, '__fanFormFixtureState', {
+    value: state,
+    enumerable: true,
+    configurable: false,
+    writable: false
+  });
+
+  const eventLogs = { stable: [], dynamic: [] };
+  const cities = ['上海', '深圳', '杭州'];
+
+  function setText(id, value) {
+    document.getElementById(id).textContent = String(value);
+  }
+
+  function addEvent(kind, message) {
+    const items = eventLogs[kind];
+    items.push(message);
+    const log = document.getElementById(kind + '-event-log');
+    log.replaceChildren(...items.map((text, index) => {
+      const item = document.createElement('li');
+      item.textContent = '#' + (index + 1) + ' ' + text;
+      return item;
+    }));
+  }
+
+  function setResult(kind, status, message) {
+    const result = document.getElementById(kind + '-result');
+    result.className = 'result' + (status === 'ok' ? ' ok' : status === 'error' ? ' err' : '');
+    result.dataset.state = status;
+    result.textContent = message;
+  }
+
+  function renderStableMetrics() {
+    setText('stable-input-events', state.stable.inputEvents);
+    setText('stable-submit-attempts', state.stable.submitAttempts);
+    setText('stable-success-count', state.stable.successCount);
+    setText('stable-final-state', state.stable.finalState);
+  }
+
+  function renderDynamicMetrics() {
+    setText('dynamic-input-events', state.dynamic.inputEvents);
+    setText('dynamic-suggestion-renders', state.dynamic.suggestionRenders);
+    setText('dynamic-button-replacements', state.dynamic.buttonReplacements);
+    setText('dynamic-option-selections', state.dynamic.optionSelections);
+    setText('dynamic-submit-attempts', state.dynamic.submitAttempts);
+    setText('dynamic-premature-submits', state.dynamic.prematureSubmits);
+    setText('dynamic-success-count', state.dynamic.successCount);
+    setText('dynamic-final-state', state.dynamic.finalState);
+  }
+
+  const stableForm = document.getElementById('stable-form');
+  const stableInput = document.getElementById('stable-code-input');
+
+  stableInput.addEventListener('input', () => {
+    // 故意不更新 DOM：案例 A 在输入与点击之间必须保持结构稳定。
+    state.stable.inputEvents += 1;
+  });
+
+  stableForm.addEventListener('submit', event => {
+    event.preventDefault();
+    state.stable.submitAttempts += 1;
+    if (stableInput.value.trim() === '2468') {
+      state.stable.successCount += 1;
+      state.stable.finalState = 'success';
+      setResult('stable', 'ok', '✅ 稳定表单提交成功；输入与确认已完整执行');
+      addEvent('stable', '提交成功，验证码为 2468');
+    } else {
+      state.stable.finalState = 'invalid-code';
+      setResult('stable', 'error', '❌ 验证码错误；本次提交已计数');
+      addEvent('stable', '提交失败，验证码不匹配');
+    }
+    renderStableMetrics();
+  });
+
+  document.getElementById('stable-reset').addEventListener('click', () => {
+    stableInput.value = '';
+    Object.assign(state.stable, {
+      inputEvents: 0,
+      submitAttempts: 0,
+      successCount: 0,
+      finalState: 'idle'
+    });
+    eventLogs.stable.length = 0;
+    document.getElementById('stable-event-log').innerHTML = '<li>尚无事件</li>';
+    setResult('stable', 'idle', '等待操作');
+    renderStableMetrics();
+  });
+
+  const dynamicForm = document.getElementById('dynamic-form');
+  const dynamicInput = document.getElementById('dynamic-city-input');
+  const suggestions = document.getElementById('dynamic-suggestions');
+  let lastDynamicValue = '';
+
+  function newDynamicSubmit(text, generation) {
+    const button = document.createElement('button');
+    button.type = 'submit';
+    button.id = 'dynamic-submit';
+    button.dataset.generation = generation;
+    button.textContent = text;
+    return button;
+  }
+
+  function replaceDynamicSubmit(text, generation, { count = true } = {}) {
+    const current = document.getElementById('dynamic-submit');
+    const replacement = newDynamicSubmit(text, generation);
+    current.replaceWith(replacement);
+    if (count) state.dynamic.buttonReplacements += 1;
+  }
+
+  function chooseCity(city) {
+    state.dynamic.selectedCity = city;
+    state.dynamic.optionSelections += 1;
+    state.dynamic.finalState = 'suggestion-selected';
+    dynamicInput.value = city;
+    lastDynamicValue = city;
+    dynamicInput.setAttribute('aria-expanded', 'false');
+    suggestions.hidden = true;
+    suggestions.replaceChildren();
+    replaceDynamicSubmit('确认已选城市：' + city, 'selected-' + state.dynamic.optionSelections);
+    setResult('dynamic', 'idle', '已选择“' + city + '”；现在可以点击更新后的确认按钮');
+    addEvent('dynamic', '选择建议“' + city + '”，确认按钮再次替换');
+    renderDynamicMetrics();
+  }
+
+  function renderSuggestions(query) {
+    const normalized = query.trim();
+    const matches = cities.filter(city => city.includes(normalized));
+    const values = matches.length ? matches : cities;
+    suggestions.replaceChildren(...values.map(city => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('role', 'option');
+      button.dataset.city = city;
+      button.textContent = city;
+      button.addEventListener('click', () => chooseCity(city));
+      return button;
+    }));
+    suggestions.hidden = false;
+    dynamicInput.setAttribute('aria-expanded', 'true');
+    state.dynamic.suggestionRenders += 1;
+  }
+
+  dynamicInput.addEventListener('input', () => {
+    const value = dynamicInput.value.trim();
+    if (value === lastDynamicValue) return;
+    lastDynamicValue = value;
+    state.dynamic.inputEvents += 1;
+    state.dynamic.selectedCity = '';
+
+    if (!value) {
+      suggestions.hidden = true;
+      suggestions.replaceChildren();
+      dynamicInput.setAttribute('aria-expanded', 'false');
+      state.dynamic.finalState = 'idle';
+      replaceDynamicSubmit('确认动态表单（已重置）', 'empty-' + state.dynamic.inputEvents);
+      setResult('dynamic', 'idle', '输入已清空；误提交数应保持为 0');
+      addEvent('dynamic', '输入清空，确认按钮已替换');
+      renderDynamicMetrics();
+      return;
+    }
+
+    // 关键测试行为：同一个 input 事件内同步新增列表并替换旧的确认节点。
+    renderSuggestions(value);
+    replaceDynamicSubmit('确认（尚未选择建议）', 'query-' + state.dynamic.inputEvents);
+    state.dynamic.finalState = 'awaiting-suggestion';
+    setResult('dynamic', 'idle', '页面已变化：请先从新出现的建议中选择城市，不要直接提交');
+    addEvent('dynamic', '输入“' + value + '”后生成建议并替换确认按钮');
+    renderDynamicMetrics();
+  });
+
+  dynamicForm.addEventListener('submit', event => {
+    event.preventDefault();
+    state.dynamic.submitAttempts += 1;
+    const typed = dynamicInput.value.trim();
+    if (!state.dynamic.selectedCity || typed !== state.dynamic.selectedCity) {
+      state.dynamic.prematureSubmits += 1;
+      state.dynamic.finalState = 'premature-submit';
+      setResult('dynamic', 'error', '❌ 发生误提交：尚未从动态建议中选择有效城市');
+      addEvent('dynamic', '误提交 #' + state.dynamic.prematureSubmits + '（未选择建议）');
+    } else {
+      state.dynamic.successCount += 1;
+      state.dynamic.finalState = 'success';
+      setResult('dynamic', 'ok', '✅ 动态表单提交成功；已选择并确认“' + state.dynamic.selectedCity + '”');
+      addEvent('dynamic', '提交成功，城市为“' + state.dynamic.selectedCity + '”');
+    }
+    renderDynamicMetrics();
+  });
+
+  document.getElementById('dynamic-reset').addEventListener('click', () => {
+    dynamicInput.value = '';
+    dynamicInput.setAttribute('aria-expanded', 'false');
+    lastDynamicValue = '';
+    suggestions.hidden = true;
+    suggestions.replaceChildren();
+    Object.assign(state.dynamic, {
+      inputEvents: 0,
+      suggestionRenders: 0,
+      buttonReplacements: 0,
+      optionSelections: 0,
+      submitAttempts: 0,
+      prematureSubmits: 0,
+      successCount: 0,
+      finalState: 'idle',
+      selectedCity: ''
+    });
+    replaceDynamicSubmit('确认动态表单（初始）', 'initial', { count: false });
+    eventLogs.dynamic.length = 0;
+    document.getElementById('dynamic-event-log').innerHTML = '<li>尚无事件</li>';
+    setResult('dynamic', 'idle', '等待输入；误提交数应保持为 0');
+    renderDynamicMetrics();
+  });
+
+  renderStableMetrics();
+  renderDynamicMetrics();
+})();
+</script>
+</body>
+</html>

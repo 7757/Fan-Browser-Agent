@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fan Browser Shell 人工测试中心</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: #f4f6fa;
+    color: #1f2733;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  header, main { width: min(980px, calc(100% - 32px)); margin-inline: auto; }
+  header { padding: 28px 0 18px; }
+  h1 { margin: 0; font-size: 25px; }
+  header p { margin: 6px 0 0; color: #657080; font-size: 14px; }
+  .banner {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border: 1px solid #bfd1f3;
+    border-radius: 10px;
+    background: #eef4ff;
+    color: #315991;
+    font-size: 13px;
+  }
+  main {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    padding-bottom: 56px;
+  }
+  .card {
+    min-width: 0;
+    padding: 21px;
+    border: 1px solid #e1e6ee;
+    border-radius: 13px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(24, 39, 65, .05);
+  }
+  .wide { grid-column: 1 / -1; }
+  h2 { margin: 0; font-size: 17px; }
+  .desc { margin: 6px 0 15px; color: #657080; font-size: 13px; line-height: 1.6; }
+  .expected {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-left: 3px solid #2f6fdf;
+    background: #f7f9fc;
+    color: #485568;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: 9px; }
+  button, a.action {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    border: 0;
+    border-radius: 8px;
+    background: #2167d5;
+    color: #fff;
+    cursor: pointer;
+    font: 600 13px/1 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    text-decoration: none;
+  }
+  button:hover, a.action:hover { background: #1857b7; }
+  button.secondary, a.action.secondary { background: #edf1f6; color: #364152; }
+  button.danger { background: #b54242; }
+  textarea {
+    width: 100%;
+    min-height: 76px;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    resize: vertical;
+    border: 1px solid #d5dce7;
+    border-radius: 8px;
+    font: inherit;
+  }
+  .result {
+    min-height: 38px;
+    margin-top: 13px;
+    padding: 9px 11px;
+    border: 1px solid #e1e6ee;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #667180;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .result.ok { border-color: #b6dfc5; background: #eaf8ef; color: #187247; }
+  .result.warn { border-color: #edd5a5; background: #fff8e9; color: #8a621c; }
+  .links { margin: 12px 0 0; padding-left: 18px; font-size: 13px; }
+  .links a { color: #2167d5; }
+  .child-only { display: none; }
+  body.child-mode .suite { display: none; }
+  body.child-mode .child-only { display: block; }
+  footer { margin-top: 20px; color: #788292; font-size: 12px; }
+  footer a { color: #2167d5; }
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; }
+    .wide { grid-column: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="child-only">
+  <header>
+    <h1>页面创建的子标签</h1>
+    <p>这个标签由测试页通过 window.open 创建。</p>
+    <div class="banner">点击下面的按钮后，此子标签应自行关闭；原测试页必须保留。</div>
+  </header>
+  <main>
+    <section class="card wide">
+      <div class="actions">
+        <button id="close-child">执行 window.close()</button>
+      </div>
+      <div class="result" id="child-result">等待关闭</div>
+    </section>
+  </main>
+</div>
+
+<div class="suite">
+  <header>
+    <h1>Browser Shell 人工测试中心</h1>
+    <p>按卡片顺序点击即可，不需要 AI 操作。每项都写明了预期结果。</p>
+    <div class="banner">
+      测试 Main / Preload 改动前，请完全退出并重新启动 Fan。仅刷新页面或等待热更新不会加载新逻辑。
+    </div>
+  </header>
+
+  <main>
+    <section class="card" id="external-app">
+      <h2>1. 外部应用</h2>
+      <p class="desc">模拟企业微信网页中的“打开微信”链接。建议先测取消，再重新点击测试打开。</p>
+      <div class="actions">
+        <a class="action" href="weixin://dl/business/?ticket=fan-browser-shell-test">请求打开微信</a>
+        <a class="action secondary" href="wxwork://message/send?ticket=fan-browser-shell-test">请求打开企业微信</a>
+      </div>
+      <div class="expected">
+        预期：先出现 Fan 的说明弹窗。取消时不启动应用；选择“打开应用”后，才出现 macOS 的系统确认或启动对应应用。
+      </div>
+    </section>
+
+    <section class="card" id="download">
+      <h2>2. 手动下载</h2>
+      <p class="desc">下载一个本地生成的 3 MB 文件，服务端会故意分段发送，便于看到进度。</p>
+      <div class="actions">
+        <a class="action" href="/browser-shell-download">开始下载测试文件</a>
+      </div>
+      <div class="expected">
+        预期：开始前不显示下载图标；点击后工具栏自动展开下载区并显示进度。完成后可“打开”或在 Finder
+        中显示；点击下载区右上角的叉后，下载区和工具栏图标一起消失，再次开始新下载时重新出现。
+      </div>
+    </section>
+
+    <section class="card" id="javascript-dialogs">
+      <h2>3. 网站 JS 弹窗</h2>
+      <p class="desc">分别验证 alert、confirm 和 prompt，不应静默忽略，也不应让页面假装完成。</p>
+      <div class="actions">
+        <button id="alert-test">测试 alert</button>
+        <button class="secondary" id="confirm-test">测试 confirm</button>
+        <button class="secondary" id="prompt-test">测试 prompt</button>
+      </div>
+      <div class="result" id="dialog-result">等待操作</div>
+      <div class="expected">
+        预期：Fan 显示中文说明。confirm 的确定/取消、prompt 的输入内容会回显在上方结果框。
+      </div>
+    </section>
+
+    <section class="card" id="permissions">
+      <h2>4. 页面权限</h2>
+      <p class="desc">本地 localhost 可触发浏览器权限。建议先拒绝，再重新点击允许。</p>
+      <div class="actions">
+        <button id="notification-test">请求通知权限</button>
+        <button class="secondary" id="location-test">请求位置权限</button>
+      </div>
+      <div class="result" id="permission-result">等待操作</div>
+      <div class="expected">
+        预期：Fan 说明哪个页面请求什么权限，并提示“仅对当前页面有效”。刷新或离开再返回后，应重新询问。
+      </div>
+    </section>
+
+    <section class="card wide" id="before-unload">
+      <h2>5. 离开页面确认</h2>
+      <p class="desc">先在文本框输入任意内容，使页面进入“有未保存内容”状态，再点击测试离开。</p>
+      <textarea id="draft" placeholder="在这里输入任意内容"></textarea>
+      <div class="actions">
+        <button id="leave-test">测试离开当前页</button>
+        <button class="secondary" id="clear-draft">清除未保存状态</button>
+      </div>
+      <div class="result" id="leave-result">当前没有未保存内容</div>
+      <div class="expected">
+        预期：出现“是否离开当前页面”。选择“留在此页”后页面不动；选择“离开页面”后重新加载，并显示已成功离开。
+      </div>
+    </section>
+
+    <section class="card" id="popup">
+      <h2>6. 新标签与自关闭</h2>
+      <p class="desc">打开一个由页面创建的子标签，再在子标签中执行 window.close。</p>
+      <div class="actions">
+        <button id="open-child">打开测试子标签</button>
+      </div>
+      <div class="result" id="popup-result">等待操作</div>
+      <div class="expected">
+        预期：新标签受 Fan 管理；子标签可以关闭自己，原测试页不能被一起关闭。
+      </div>
+    </section>
+
+    <section class="card" id="context-menu">
+      <h2>7. 页面右键菜单</h2>
+      <p class="desc">在下面任一链接上右键，测试复制链接或在新标签打开；在空白处右键测试前进、后退和刷新。</p>
+      <ul class="links">
+        <li><a href="/form-submit.html">稳定与动态表单页</a></li>
+        <li><a href="/">测试站首页</a></li>
+      </ul>
+      <div class="expected">预期：出现浏览器页面菜单，而不是毫无反应。</div>
+    </section>
+
+    <section class="card wide" id="health">
+      <h2>8. 页面无响应与恢复</h2>
+      <p class="desc">此按钮会让当前网页冻结约 8 秒，但 Fan 主界面仍应可操作。仅在前面项目通过后测试。</p>
+      <div class="actions">
+        <button class="danger" id="freeze-test">冻结当前网页 8 秒</button>
+      </div>
+      <div class="result warn" id="health-result">尚未执行</div>
+      <div class="expected">
+        预期：工具栏提示“网页暂时没有响应”；8 秒后页面恢复，异常提示自动消失。
+      </div>
+    </section>
+
+    <footer class="wide">
+      <a href="/">← 返回测试站首页</a>
+    </footer>
+  </main>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const params = new URLSearchParams(location.search);
+  const childMode = params.get('child') === '1';
+  if (childMode) document.body.classList.add('child-mode');
+
+  function result(id, message, kind = '') {
+    const node = document.getElementById(id);
+    if (!node) return;
+    node.className = 'result' + (kind ? ' ' + kind : '');
+    node.textContent = message;
+  }
+
+  document.getElementById('close-child')?.addEventListener('click', () => {
+    result('child-result', '已请求关闭当前子标签', 'ok');
+    window.close();
+  });
+
+  if (childMode) return;
+
+  document.getElementById('alert-test').addEventListener('click', () => {
+    alert('这是 Fan Browser Shell 的 alert 测试。');
+    result('dialog-result', 'alert 已由用户确认', 'ok');
+  });
+
+  document.getElementById('confirm-test').addEventListener('click', () => {
+    const accepted = confirm('是否确认这次 Browser Shell 测试？');
+    result('dialog-result', 'confirm 返回：' + accepted, 'ok');
+  });
+
+  document.getElementById('prompt-test').addEventListener('click', () => {
+    const value = prompt('请输入测试内容：', 'Fan');
+    result('dialog-result', value === null ? 'prompt 已取消' : 'prompt 返回：' + value, 'ok');
+  });
+
+  document.getElementById('notification-test').addEventListener('click', async () => {
+    result('permission-result', '正在等待通知权限选择…');
+    try {
+      const state = await Notification.requestPermission();
+      result('permission-result', '通知权限结果：' + state, 'ok');
+    } catch (error) {
+      result('permission-result', '通知权限请求失败：' + error.message, 'warn');
+    }
+  });
+
+  document.getElementById('location-test').addEventListener('click', () => {
+    result('permission-result', '正在等待位置权限选择…');
+    navigator.geolocation.getCurrentPosition(
+      position => result(
+        'permission-result',
+        '位置权限已允许；精度约 ' + Math.round(position.coords.accuracy) + ' 米',
+        'ok'
+      ),
+      error => result('permission-result', '位置权限结果：' + error.message, 'warn'),
+      { enableHighAccuracy: false, maximumAge: 0, timeout: 8000 }
+    );
+  });
+
+  let dirty = false;
+  const draft = document.getElementById('draft');
+  draft.addEventListener('input', () => {
+    dirty = draft.value.length > 0;
+    result('leave-result', dirty ? '已有未保存内容' : '当前没有未保存内容', dirty ? 'warn' : '');
+  });
+  window.addEventListener('beforeunload', event => {
+    if (!dirty) return;
+    event.preventDefault();
+    event.returnValue = '';
+  });
+  document.getElementById('leave-test').addEventListener('click', () => {
+    location.href = '/browser-shell.html?returned=1';
+  });
+  document.getElementById('clear-draft').addEventListener('click', () => {
+    dirty = false;
+    draft.value = '';
+    result('leave-result', '未保存状态已清除', 'ok');
+  });
+  if (params.get('returned') === '1') {
+    result('leave-result', '已选择离开并成功加载新页面', 'ok');
+  }
+
+  document.getElementById('open-child').addEventListener('click', () => {
+    const opened = window.open('/browser-shell.html?child=1&nonce=' + Date.now(), '_blank');
+    result(
+      'popup-result',
+      opened ? '已请求打开子标签，请切换到新标签继续' : '浏览器拒绝了子标签请求',
+      opened ? 'ok' : 'warn'
+    );
+  });
+
+  document.getElementById('freeze-test').addEventListener('click', () => {
+    result('health-result', '即将冻结，请观察 Fan 浏览器工具栏…', 'warn');
+    setTimeout(() => {
+      const end = performance.now() + 8000;
+      while (performance.now() < end) {
+        Math.sqrt(Math.random());
+      }
+      result('health-result', '网页已恢复响应', 'ok');
+    }, 120);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+import { atom } from 'nanostores'
+
+import { triggerHaptic } from '@/lib/haptics'
+
+export interface ComposerAttachment {
+  id: string
+  kind: 'image' | 'file' | 'folder' | 'terminal' | 'url'
+  label: string
+  detail?: string
+  refText?: string
+  previewUrl?: string
+  path?: string
+  attachedSessionId?: string
+}
+
+const $composerDraft = atom('')
+export const $composerAttachments = atom<ComposerAttachment[]>([])
+const $composerTerminalSelections = atom<Record<string, string>>({})
+export function clearComposerDraft() {
+  $composerDraft.set('')
+}
+
+export function addComposerAttachment(attachment: ComposerAttachment) {
+  const previous = $composerAttachments.get()
+  const next = upsertAttachment(previous, attachment)
+  $composerAttachments.set(next)
+
+  if (next.length > previous.length && attachment.kind !== 'url') {
+    triggerHaptic('selection')
+  }
+}
+
+export function removeComposerAttachment(id: string): ComposerAttachment | null {
+  const current = $composerAttachments.get()
+  const removed = current.find(attachment => attachment.id === id) || null
+  $composerAttachments.set(current.filter(attachment => attachment.id !== id))
+
+  return removed
+}
+
+export function clearComposerAttachments() {
+  $composerAttachments.set([])
+}
+
+const TERMINAL_REF_RE = /@terminal:(`[^`\n]+`|"[^"\n]+"|'[^'\n]+'|\S+)/g
+
+function unquoteRefValue(raw: string) {
+  const head = raw[0]
+  const tail = raw[raw.length - 1]
+  const quoted = (head === '`' && tail === '`') || (head === '"' && tail === '"') || (head === "'" && tail === "'")
+
+  return (quoted ? raw.slice(1, -1) : raw).replace(/[,.;!?]+$/, '').trim()
+}
+
+function terminalLabelsFromDraft(draft: string) {
+  const labels: string[] = []
+  const seen = new Set<string>()
+
+  for (const match of draft.matchAll(TERMINAL_REF_RE)) {
+    const label = unquoteRefValue(match[1] || '')
+
+    if (!label || seen.has(label)) {
+      continue
+    }
+
+    seen.add(label)
+    labels.push(label)
+  }
+
+  return labels
+}
+
+export function setComposerTerminalSelection(label: string, text: string) {
+  const nextLabel = label.trim()
+  const nextText = text.trim()
+
+  if (!nextLabel || !nextText) {
+    return
+  }
+
+  const current = $composerTerminalSelections.get()
+
+  if (current[nextLabel] === nextText) {
+    return
+  }
+
+  $composerTerminalSelections.set({
+    ...current,
+    [nextLabel]: nextText
+  })
+}
+
+export function terminalContextBlocksFromDraft(draft: string) {
+  const labels = terminalLabelsFromDraft(draft)
+
+  if (labels.length === 0) {
+    return []
+  }
+
+  const selections = $composerTerminalSelections.get()
+
+  return labels.flatMap(label => {
+    const text = selections[label]?.trim()
+
+    if (!text) {
+      return []
+    }
+
+    return `\`\`\`terminal\n${text}\n\`\`\``
+  })
+}
+function upsertAttachment(attachments: ComposerAttachment[], attachment: ComposerAttachment) {
+  const index = attachments.findIndex(item => item.id === attachment.id)
+
+  if (index < 0) {
+    return [...attachments, attachment]
+  }
+
+  const next = [...attachments]
+  next[index] = attachment
+
+  return next
+}

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fan Browser-Agent 信息收集 E2E 测试站</title>
+<style>
+  /* ============ 基础样式:浅色、卡片式 ============ */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f4f6fa;
+    color: #1f2733;
+    line-height: 1.6;
+  }
+  /* 顶部说明条 */
+  .notice-bar {
+    background: #1f6feb;
+    color: #fff;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+  header.page-head {
+    max-width: 860px;
+    margin: 28px auto 8px;
+    padding: 0 20px;
+  }
+  header.page-head h1 { font-size: 24px; font-weight: 700; }
+  header.page-head p { color: #5b6572; font-size: 14px; margin-top: 4px; }
+  main {
+    max-width: 860px;
+    margin: 0 auto 80px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  /* 场景卡片 */
+  section.card {
+    background: #fff;
+    border: 1px solid #e4e8ef;
+    border-radius: 12px;
+    padding: 24px 28px;
+    box-shadow: 0 1px 3px rgba(20, 32, 55, .05);
+  }
+  section.card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  section.card h2 .tag {
+    font-size: 12px;
+    font-weight: 500;
+    background: #eef3fd;
+    color: #1f6feb;
+    border-radius: 6px;
+    padding: 1px 8px;
+  }
+  section.card .desc { color: #5b6572; font-size: 13px; margin-bottom: 16px; }
+  /* 表单元素 */
+  form { display: flex; flex-direction: column; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 13px; font-weight: 500; color: #3a4351; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .row .field { flex: 1; min-width: 140px; }
+  input[type=text], input[type=tel], input[type=number], input[type=date], select {
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #d4dae3;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fff;
+    outline: none;
+    width: 100%;
+  }
+  input:focus, select:focus { border-color: #1f6feb; box-shadow: 0 0 0 3px rgba(31,111,235,.12); }
+  input[type=file] { font-size: 13px; }
+  button {
+    height: 40px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 8px;
+    background: #1f6feb;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  button:hover { background: #175cd3; }
+  button.secondary { background: #eef1f6; color: #3a4351; }
+  button.secondary:hover { background: #e2e7ef; }
+  .inline { display: flex; gap: 10px; align-items: flex-end; }
+  .inline .field { flex: 1; }
+  .hint { font-size: 12px; color: #8a93a0; margin-top: 10px; }
+  /* 结果横幅:成功绿 / 失败红 */
+  .result { display: none; margin-top: 16px; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; }
+  .result.ok { display: block; background: #e7f7ec; color: #16794c; border: 1px solid #b8e6c9; }
+  .result.err { display: block; background: #fdecec; color: #c0392b; border: 1px solid #f5c6c2; }
+  /* 模拟手机短信小窗(固定右下角) */
+  .sms-popup {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 300px;
+    background: #fff;
+    border: 1px solid #e4e8ef;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(20, 32, 55, .18);
+    overflow: hidden;
+    z-index: 99;
+  }
+  .sms-popup .sms-head {
+    background: #f7f8fa;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #3a4351;
+    border-bottom: 1px solid #eef1f6;
+  }
+  .sms-popup .sms-body { padding: 12px 14px; font-size: 14px; color: #1f2733; }
+  /* 图形验证码 */
+  canvas#captcha-canvas { border: 1px solid #d4dae3; border-radius: 8px; background: #fbfcfe; cursor: pointer; }
+  /* 滑动条样式(行为验证已拆至 slider.html,此处留样式防回归)*/
+  .slider-track {
+    position: relative;
+    height: 44px;
+    background: #eef1f6;
+    border: 1px solid #d4dae3;
+    border-radius: 10px;
+    overflow: hidden;
+    user-select: none;
+  }
+  .slider-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0;
+    background: #d6e6ff;
+  }
+  .slider-track.done .slider-fill { background: #c4eed4; }
+  .slider-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #8a93a0;
+    pointer-events: none;
+  }
+  .slider-handle {
+    position: absolute;
+    left: 0; top: 0;
+    width: 52px;
+    height: 100%;
+    background: #fff;
+    border: 1px solid #d4dae3;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #1f6feb;
+    cursor: grab;
+    touch-action: none;
+    box-shadow: 0 1px 4px rgba(20,32,55,.12);
+  }
+  .slider-track.done .slider-handle { color: #16794c; cursor: default; }
+</style>
+</head>
+<body>
+
+<!-- 顶部说明条 -->
+<div class="notice-bar">此页面用于 Fan browser-agent 信息收集 E2E 测试。</div>
+
+<header class="page-head">
+  <h1>信息收集场景测试台</h1>
+  <p>六个独立场景:手机验证码登录、信用卡支付、实名认证、OA 报销、图形验证码、滑块行为验证。</p>
+</header>
+
+<main>
+
+  <!-- ============ 场景 A:手机号验证码登录 ============ -->
+  <section class="card" id="login">
+    <h2><span class="tag">A</span>手机号登录</h2>
+    <p class="desc">输入手机号获取验证码(验证码显示在右下角「模拟手机短信」小窗中),输入正确验证码后登录。</p>
+    <form id="login-form" novalidate>
+      <div class="inline">
+        <div class="field">
+          <label for="login-phone">手机号</label>
+          <input type="tel" id="login-phone" name="phone" placeholder="请输入 11 位手机号" maxlength="11" autocomplete="tel">
+        </div>
+        <button type="button" id="send-code-btn">发送验证码</button>
+      </div>
+      <div class="field">
+        <label for="login-code">短信验证码</label>
+        <input type="text" id="login-code" name="code" placeholder="请输入 6 位验证码" maxlength="6" inputmode="numeric">
+      </div>
+      <div><button type="submit">登录</button></div>
+    </form>
+    <div class="result" id="login-result" role="status"></div>
+  </section>
+
+  <!-- ============ 场景 B:信用卡支付 ============ -->
+  <section class="card" id="payment">
+    <h2><span class="tag">B</span>信用卡支付</h2>
+    <p class="desc">填写信用卡信息完成 ¥199.00 订单支付。卡号需通过 Luhn 校验,允许空格分隔。</p>
+    <form id="payment-form" novalidate>
+      <div class="field">
+        <label for="card-number">卡号</label>
+        <input type="text" id="card-number" name="cardNumber" placeholder="例如 4111 1111 1111 1111" autocomplete="cc-number">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="card-expiry">有效期(MM/YY)</label>
+          <input type="text" id="card-expiry" name="expiry" placeholder="12/30" maxlength="5" autocomplete="cc-exp">
+        </div>
+        <div class="field">
+          <label for="card-cvc">CVC</label>
+          <input type="text" id="card-cvc" name="cvc" placeholder="3-4 位安全码" maxlength="4" inputmode="numeric" autocomplete="cc-csc">
+        </div>
+      </div>
+      <div class="field">
+        <label for="card-name">持卡人姓名</label>
+        <input type="text" id="card-name" name="cardName" placeholder="持卡人姓名" autocomplete="cc-name">
+      </div>
+      <div><button type="submit">支付 ¥199.00</button></div>
+    </form>
+    <p class="hint">测试卡号:4111 1111 1111 1111(有效期填未过期的 MM/YY,CVC 任意 3-4 位数字)</p>
+    <div class="result" id="payment-result" role="status"></div>
+  </section>
+
+  <!-- ============ 场景 C:实名认证 ============ -->
+  <section class="card" id="identity">
+    <h2><span class="tag">C</span>实名认证</h2>
+    <p class="desc">填写真实姓名与 18 位身份证号,身份证号需通过 GB 11643 校验位算法验证。</p>
+    <form id="identity-form" novalidate>
+      <div class="field">
+        <label for="id-name">姓名</label>
+        <input type="text" id="id-name" name="realName" placeholder="请输入姓名">
+      </div>
+      <div class="field">
+        <label for="id-number">身份证号</label>
+        <input type="text" id="id-number" name="idNumber" placeholder="18 位身份证号" maxlength="18">
+      </div>
+      <div><button type="submit">提交认证</button></div>
+    </form>
+    <p class="hint">可用测试号:11010519491231002X</p>
+    <div class="result" id="identity-result" role="status"></div>
+  </section>
+
+  <!-- ============ 场景 D:OA 报销单 ============ -->
+  <section class="card" id="expense">
+    <h2><span class="tag">D</span>OA 报销单</h2>
+    <p class="desc">填写报销信息并上传发票文件(任意文件即可),全部填写后提交。</p>
+    <form id="expense-form" novalidate>
+      <div class="field">
+        <label for="expense-reason">报销事由</label>
+        <input type="text" id="expense-reason" name="reason" placeholder="例如:客户拜访差旅费">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="expense-amount">金额(元)</label>
+          <input type="number" id="expense-amount" name="amount" placeholder="0.00" min="0.01" step="0.01">
+        </div>
+        <div class="field">
+          <label for="expense-date">日期</label>
+          <input type="date" id="expense-date" name="date">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="expense-dept">部门</label>
+          <select id="expense-dept" name="department">
+            <option value="">请选择部门</option>
+            <option value="技术部">技术部</option>
+            <option value="市场部">市场部</option>
+            <option value="财务部">财务部</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="expense-invoice-no">发票号码(8 位数字)</label>
+          <input type="text" id="expense-invoice-no" name="invoiceNo" placeholder="例如 12345678" maxlength="8" inputmode="numeric">
+        </div>
+      </div>
+      <div class="field">
+        <label for="expense-invoice-file">发票文件</label>
+        <input type="file" id="expense-invoice-file" name="invoiceFile">
+      </div>
+      <div><button type="submit">提交报销单</button></div>
+    </form>
+    <div class="result" id="expense-result" role="status"></div>
+  </section>
+
+  <!-- ============ 场景 E:图形验证码 ============ -->
+  <section class="card" id="captcha-text">
+    <h2><span class="tag">E</span>图形验证码</h2>
+    <p class="desc">识别图中 4 位字符(大写字母 + 数字,不区分大小写)并输入,点击图片或「刷新」可更换。</p>
+    <form id="captcha-form" novalidate>
+      <div class="inline">
+        <canvas id="captcha-canvas" width="140" height="44" title="点击刷新验证码"></canvas>
+        <button type="button" class="secondary" id="captcha-refresh-btn">刷新</button>
+      </div>
+      <div class="field">
+        <label for="captcha-input">验证码</label>
+        <input type="text" id="captcha-input" name="captcha" placeholder="请输入图中字符" maxlength="4" autocomplete="off">
+      </div>
+      <div><button type="submit">提交</button></div>
+    </form>
+    <div class="result" id="captcha-result" role="status"></div>
+  </section>
+
+  <!-- ============ 场景 F:滑块行为验证(独立页面)============
+       行为型检测按整页文本匹配:滑块关键词若与 A-E 同页,会把全页判成
+       行为验证、挂起 agent,A-E 就全测不了。所以 F 单独成页。 -->
+  <section class="card" id="captcha-slider">
+    <h2><span class="tag">F</span>行为验证(滑块)</h2>
+    <p class="desc">此场景在独立页面进行(agent 应在该页被暂停并请你亲自完成):</p>
+    <p><a href="/slider.html" style="color:#2563eb;font-weight:600">→ 打开行为验证页</a></p>
+  </section>
+
+  <!-- 表单事务专项页不计入上面的六个信息收集场景。 -->
+  <section class="card" id="form-submit-fixture">
+    <h2><span class="tag">专项</span>稳定与动态表单事务</h2>
+    <p class="desc">对比一次完成的普通稳定表单，以及输入后必须重新观察的动态建议表单。</p>
+    <p><a href="/form-submit.html" style="color:#2563eb;font-weight:600">→ 打开表单事务验证页</a></p>
+  </section>
+
+  <section class="card" id="browser-shell-fixture">
+    <h2><span class="tag">专项</span>Browser Shell 人工测试中心</h2>
+    <p class="desc">集中验证外部应用、下载、JS 弹窗、页面权限、离开确认、新标签、右键菜单与网页无响应反馈。</p>
+    <p><a href="/browser-shell.html" style="color:#2563eb;font-weight:600">→ 打开 Browser Shell 人工测试中心</a></p>
+  </section>
+
+</main>
+
+<!-- 模拟手机短信小窗(发送验证码后出现) -->
+<div class="sms-popup" id="sms-popup" hidden>
+  <div class="sms-head">📱 模拟手机短信</div>
+  <div class="sms-body" id="sms-body"></div>
+</div>
+
+<script>
+'use strict';
+
+/* ============ 通用:结果横幅 ============ */
+// ok=true 显示绿色 ✅ 成功横幅,ok=false 显示红色 ❌ 错误提示
+function showResult(elId, ok, message) {
+  const el = document.getElementById(elId);
+  el.className = 'result ' + (ok ? 'ok' : 'err');
+  el.textContent = (ok ? '✅ ' : '❌ ') + message;
+}
+
+/* ============ 场景 A:手机号验证码登录 ============ */
+const PHONE_RE = /^1[3-9]\d{9}$/;
+let smsCode = null; // 当前有效的短信验证码(纯前端模拟,无后端状态)
+
+document.getElementById('send-code-btn').addEventListener('click', () => {
+  const phone = document.getElementById('login-phone').value.trim();
+  if (!PHONE_RE.test(phone)) {
+    showResult('login-result', false, '手机号格式不正确,请输入 11 位大陆手机号');
+    return;
+  }
+  // 生成 6 位随机验证码并展示在「模拟手机短信」小窗
+  smsCode = String(Math.floor(100000 + Math.random() * 900000));
+  document.getElementById('sms-body').textContent = '【测试】您的验证码是 ' + smsCode;
+  document.getElementById('sms-popup').hidden = false;
+  showResult('login-result', true, '验证码已发送,请查看右下角模拟手机短信');
+});
+
+document.getElementById('login-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const phone = document.getElementById('login-phone').value.trim();
+  const code = document.getElementById('login-code').value.trim();
+  if (!PHONE_RE.test(phone)) {
+    showResult('login-result', false, '手机号格式不正确,请输入 11 位大陆手机号');
+    return;
+  }
+  if (smsCode === null) {
+    showResult('login-result', false, '请先点击「发送验证码」获取验证码');
+    return;
+  }
+  if (code !== smsCode) {
+    showResult('login-result', false, '验证码错误,请核对模拟手机短信中的验证码');
+    return;
+  }
+  showResult('login-result', true, '登录成功,欢迎回来 ' + phone);
+});
+
+/* ============ 场景 B:信用卡支付 ============ */
+// Luhn 校验:去除空格与连字符(与桌面收集卡口径一致)后从右向左隔位加倍求和
+function luhnValid(raw) {
+  const digits = raw.replace(/[\s-]/g, '');
+  if (!/^\d{13,19}$/.test(digits)) return false;
+  let sum = 0;
+  for (let i = 0; i < digits.length; i++) {
+    let d = Number(digits[digits.length - 1 - i]);
+    if (i % 2 === 1) {
+      d *= 2;
+      if (d > 9) d -= 9;
+    }
+    sum += d;
+  }
+  return sum % 10 === 0;
+}
+
+// 有效期:MM/YY 格式且不早于当前月份
+function expiryValid(raw) {
+  const m = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(raw);
+  if (!m) return false;
+  const month = Number(m[1]);
+  const year = 2000 + Number(m[2]);
+  const now = new Date();
+  return year > now.getFullYear() || (year === now.getFullYear() && month >= now.getMonth() + 1);
+}
+
+document.getElementById('payment-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const cardNumber = document.getElementById('card-number').value.trim();
+  const expiry = document.getElementById('card-expiry').value.trim();
+  const cvc = document.getElementById('card-cvc').value.trim();
+  const name = document.getElementById('card-name').value.trim();
+  if (!luhnValid(cardNumber)) {
+    showResult('payment-result', false, '卡号无效(未通过 Luhn 校验)');
+    return;
+  }
+  if (!expiryValid(expiry)) {
+    showResult('payment-result', false, '有效期无效,格式为 MM/YY 且不能早于当前月份');
+    return;
+  }
+  if (!/^\d{3,4}$/.test(cvc)) {
+    showResult('payment-result', false, 'CVC 无效,应为 3-4 位数字');
+    return;
+  }
+  if (name === '') {
+    showResult('payment-result', false, '请填写持卡人姓名');
+    return;
+  }
+  showResult('payment-result', true, '支付成功 ¥199.00');
+});
+
+/* ============ 场景 C:实名认证 ============ */
+// GB 11643 身份证校验位算法:前 17 位加权求和 mod 11 映射校验字符
+function idCardValid(raw) {
+  const id = raw.toUpperCase();
+  if (!/^\d{17}[\dX]$/.test(id)) return false;
+  const WEIGHTS = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+  const CHECK_CODES = '10X98765432';
+  let sum = 0;
+  for (let i = 0; i < 17; i++) sum += Number(id[i]) * WEIGHTS[i];
+  return CHECK_CODES[sum % 11] === id[17];
+}
+
+document.getElementById('identity-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = document.getElementById('id-name').value.trim();
+  const idNumber = document.getElementById('id-number').value.trim();
+  if (name === '') {
+    showResult('identity-result', false, '请填写姓名');
+    return;
+  }
+  if (!idCardValid(idNumber)) {
+    showResult('identity-result', false, '身份证号无效(18 位且需通过校验位验证)');
+    return;
+  }
+  showResult('identity-result', true, '实名认证成功:' + name);
+});
+
+/* ============ 场景 D:OA 报销单 ============ */
+document.getElementById('expense-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const reason = document.getElementById('expense-reason').value.trim();
+  const amount = document.getElementById('expense-amount').value.trim();
+  const date = document.getElementById('expense-date').value;
+  const dept = document.getElementById('expense-dept').value;
+  const invoiceNo = document.getElementById('expense-invoice-no').value.trim();
+  const fileInput = document.getElementById('expense-invoice-file');
+  if (reason === '') {
+    showResult('expense-result', false, '请填写报销事由');
+    return;
+  }
+  if (amount === '' || Number(amount) <= 0) {
+    showResult('expense-result', false, '请填写大于 0 的报销金额');
+    return;
+  }
+  if (date === '') {
+    showResult('expense-result', false, '请选择报销日期');
+    return;
+  }
+  if (dept === '') {
+    showResult('expense-result', false, '请选择部门');
+    return;
+  }
+  if (!/^\d{8}$/.test(invoiceNo)) {
+    showResult('expense-result', false, '发票号码应为 8 位数字');
+    return;
+  }
+  if (fileInput.files.length === 0) {
+    showResult('expense-result', false, '请上传发票文件');
+    return;
+  }
+  // 单号带随机数字;成功横幅回显文件名,用于验证文件真的选上了
+  const orderNo = 'BX-' + String(Math.floor(100000 + Math.random() * 900000));
+  showResult('expense-result', true,
+    '报销单已提交,单号 ' + orderNo + '(发票文件:' + fileInput.files[0].name + ')');
+});
+
+/* ============ 场景 E:图形验证码 ============ */
+// 字符集去掉了易混淆的 0/O/1/I,仍满足「大写字母 + 数字」
+const CAPTCHA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+let captchaText = '';
+
+// 在 canvas 上绘制 4 位随机字符 + 干扰线 + 噪点
+function drawCaptcha() {
+  const canvas = document.getElementById('captcha-canvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+
+  captchaText = '';
+  for (let i = 0; i < 4; i++) {
+    captchaText += CAPTCHA_CHARS[Math.floor(Math.random() * CAPTCHA_CHARS.length)];
+  }
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = '#fbfcfe';
+  ctx.fillRect(0, 0, w, h);
+
+  // 干扰线
+  for (let i = 0; i < 5; i++) {
+    ctx.strokeStyle = 'rgba(' + (100 + Math.random() * 120 | 0) + ',' +
+      (100 + Math.random() * 120 | 0) + ',' + (100 + Math.random() * 120 | 0) + ',0.5)';
+    ctx.beginPath();
+    ctx.moveTo(Math.random() * w, Math.random() * h);
+    ctx.lineTo(Math.random() * w, Math.random() * h);
+    ctx.stroke();
+  }
+  // 噪点
+  for (let i = 0; i < 30; i++) {
+    ctx.fillStyle = 'rgba(60,70,90,' + (0.15 + Math.random() * 0.25) + ')';
+    ctx.fillRect(Math.random() * w, Math.random() * h, 1.5, 1.5);
+  }
+  // 逐字符绘制,带随机旋转与颜色
+  for (let i = 0; i < 4; i++) {
+    ctx.save();
+    ctx.translate(20 + i * 30, h / 2);
+    ctx.rotate((Math.random() - 0.5) * 0.5);
+    ctx.font = '700 26px Menlo, Consolas, monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'hsl(' + (Math.random() * 360 | 0) + ', 55%, 38%)';
+    ctx.fillText(captchaText[i], 0, 0);
+    ctx.restore();
+  }
+}
+
+document.getElementById('captcha-refresh-btn').addEventListener('click', drawCaptcha);
+document.getElementById('captcha-canvas').addEventListener('click', drawCaptcha);
+
+document.getElementById('captcha-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const input = document.getElementById('captcha-input').value.trim().toUpperCase();
+  if (input === captchaText) {
+    showResult('captcha-result', true, '验证通过');
+  } else {
+    showResult('captcha-result', false, '验证码错误,请重新识别输入');
+    drawCaptcha(); // 失败后刷新,模拟真实站点行为
+  }
+});
+
+drawCaptcha(); // 初始渲染
+
+/* 场景 F(滑块)已拆到独立页 /slider.html——行为型关键词不能与 A-E 同页,
+   否则整页被判为行为验证、agent 被挂起,A-E 全测不了。 */
+</script>
+</body>
+</html>

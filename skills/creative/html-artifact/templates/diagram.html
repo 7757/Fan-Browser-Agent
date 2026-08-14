@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagram</title>
+<style>
+  :root {
+    --text-primary:#1a1a18; --text-secondary:#5f5e5a; --text-tertiary:#88877f;
+    --bg-primary:#ffffff; --bg-secondary:#f6f5f0; --bg-tertiary:#eeedeb;
+    --border:rgba(0,0,0,.15);
+  }
+  @media (prefers-color-scheme:dark) {
+    :root {
+      --text-primary:#e8e6de; --text-secondary:#b4b2a9; --text-tertiary:#888780;
+      --bg-primary:#1a1a18; --bg-secondary:#2c2c2a; --bg-tertiary:#3d3d3a;
+      --border:rgba(255,255,255,.15);
+    }
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:system-ui,-apple-system,sans-serif; background:var(--bg-tertiary);
+         display:flex; justify-content:center; min-height:100vh; padding:40px 20px; }
+  .card { background:var(--bg-primary); border-radius:16px; padding:32px; max-width:780px;
+          width:100%; box-shadow:0 1px 3px rgba(0,0,0,.08); overflow-x:auto; }
+  h1 { font-size:18px; font-weight:500; color:var(--text-primary); margin-bottom:8px; }
+  .subtitle { font-size:13px; color:var(--text-tertiary); margin-bottom:24px; }
+  svg { width:100%; height:auto; }
+  .t { font-size:14px; fill:var(--text-primary); }
+  .ts { font-size:12px; fill:var(--text-secondary); }
+  .th { font-size:14px; fill:var(--text-primary); font-weight:500; }
+  .box { fill:var(--bg-secondary); stroke:var(--border); stroke-width:.5px; }
+  .arr { stroke:var(--text-secondary); stroke-width:1.5px; fill:none; }
+  .leader { stroke:var(--text-tertiary); stroke-width:.5px; stroke-dasharray:4 3; fill:none; }
+  .node { cursor:pointer; transition:opacity .15s; }
+  .node:hover { opacity:.82; }
+  .node:focus { outline:none; }
+
+  .c-purple > rect,.c-purple > circle,.c-purple > ellipse{fill:#EEEDFE;stroke:#534AB7}
+  .c-purple > text{fill:#3C3489}.c-teal > rect,.c-teal > circle,.c-teal > ellipse{fill:#E1F5EE;stroke:#0F6E56}
+  .c-teal > text{fill:#085041}.c-coral > rect,.c-coral > circle,.c-coral > ellipse{fill:#FAECE7;stroke:#993C1D}
+  .c-coral > text{fill:#712B13}.c-pink > rect,.c-pink > circle,.c-pink > ellipse{fill:#FBEAF0;stroke:#993556}
+  .c-pink > text{fill:#72243E}.c-gray > rect,.c-gray > circle,.c-gray > ellipse{fill:#F1EFE8;stroke:#5F5E5A}
+  .c-gray > text{fill:#444441}.c-blue > rect,.c-blue > circle,.c-blue > ellipse{fill:#E6F1FB;stroke:#185FA5}
+  .c-blue > text{fill:#0C447C}.c-green > rect,.c-green > circle,.c-green > ellipse{fill:#EAF3DE;stroke:#3B6D11}
+  .c-green > text{fill:#27500A}.c-amber > rect,.c-amber > circle,.c-amber > ellipse{fill:#FAEEDA;stroke:#854F0B}
+  .c-amber > text{fill:#633806}.c-red > rect,.c-red > circle,.c-red > ellipse{fill:#FCEBEB;stroke:#A32D2D}
+  .c-red > text{fill:#791F1F}
+
+  body.infra { background:#020617; }
+  body.infra .card { background:#0b1220; border:1px solid #1e293b; box-shadow:none; }
+  body.infra h1 { color:#e2e8f0; }
+  body.infra .subtitle { color:#94a3b8; }
+  body.infra .grid-bg { fill:url(#infra-grid); }
+  .infra-frontend > rect.fill{fill:rgba(8,51,68,.4);stroke:#22d3ee}
+  .infra-backend > rect.fill{fill:rgba(6,78,59,.4);stroke:#34d399}
+  .infra-db > rect.fill{fill:rgba(76,29,149,.4);stroke:#a78bfa}
+  .infra-cloud > rect.fill{fill:rgba(120,53,15,.3);stroke:#fbbf24}
+  .infra-security > rect.fill{fill:rgba(136,19,55,.4);stroke:#fb7185}
+  .infra-bus > rect.fill{fill:rgba(251,146,60,.3);stroke:#fb923c}
+  .infra-external > rect.fill{fill:rgba(30,41,59,.5);stroke:#94a3b8}
+  body.infra [class^="infra-"] text { fill:#e2e8f0; }
+  body.infra rect.fill { rx:6; stroke-width:1.5; }
+</style>
+</head>
+<body>
+<main class="card">
+  <h1>Diagram title</h1>
+  <p class="subtitle">Optional framing for the relationship shown below.</p>
+  <svg viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="diagram-title diagram-desc">
+    <title id="diagram-title">Diagram title</title>
+    <desc id="diagram-desc">Replace this with a concise description of the diagram.</desc>
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1 L8 5 L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+      <pattern id="infra-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M40 0 L0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/>
+      </pattern>
+    </defs>
+    <!-- Draw edges first, then replace these sample nodes with the real diagram. -->
+    <line class="arr" x1="240" y1="120" x2="430" y2="120" marker-end="url(#arrow)"/>
+    <g class="node c-gray"><rect x="60" y="92" width="180" height="56" rx="8"/><text class="th" x="150" y="120" text-anchor="middle" dominant-baseline="central">Source</text></g>
+    <g class="node c-teal"><rect x="440" y="92" width="180" height="56" rx="8"/><text class="th" x="530" y="120" text-anchor="middle" dominant-baseline="central">Outcome</text></g>
+  </svg>
+</main>
+</body>
+</html>
+

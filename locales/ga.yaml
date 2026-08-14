@@ -1,0 +1,21 @@
+# Fan static-message catalog -- Gaeilge (Irish)
+# See locales/en.yaml for the source of truth; keep keys in sync.
+#
+# Modern Irish technical writing freely uses English loanwords for terms
+# without good native equivalents (e.g. "session", "tokens", "API").
+# Where Irish has a settled term we use it; otherwise we keep the English.
+
+approval:
+  dangerous_header: "⚠️  ORDÚ CONTÚIRTEACH: {description}"
+  choose_long:     "      [o]uair amháin  |  [s]eisiún  |  [a]i gcónaí  |  [d]iúltaigh"
+  choose_short:    "      [o]uair amháin  |  [s]eisiún  |  [d]iúltaigh"
+  prompt_long:     "      Rogha [o/s/a/D]: "
+  prompt_short:    "      Rogha [o/s/D]: "
+  timeout:         "      ⏱ Am istigh — ag diúltú don ordú"
+  allowed_once:    "      ✓ Ceadaithe uair amháin"
+  allowed_session: "      ✓ Ceadaithe don seisiún seo"
+  allowed_always:  "      ✓ Curtha leis an liosta ceadaithe buan"
+  denied:          "      ✗ Diúltaithe"
+  cancelled:       "      ✗ Cealaithe"
+  blocklist_message: "Tá an t-ordú seo ar an liosta cosc gan choinníoll agus ní féidir é a cheadú."
+

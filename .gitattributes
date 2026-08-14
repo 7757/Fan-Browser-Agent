@@ -1,0 +1,29 @@
+# Auto-generated files — collapse diffs and exclude from language stats.
+web/package-lock.json linguist-generated=true
+
+# Shell and container scripts must stay LF on Windows checkouts.
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.dockerfile text eol=lf
+docker/entrypoint.sh text eol=lf
+
+# Keep local dependencies, build products, and machine state out of source archives.
+**/node_modules/** export-ignore
+**/.venv/** export-ignore
+apps/desktop/build/** export-ignore
+apps/desktop/dist/** export-ignore
+apps/desktop/release/** export-ignore
+**/.pytest_cache/** export-ignore
+**/.ruff_cache/** export-ignore
+**/__pycache__/** export-ignore
+fan_agent.egg-info/** export-ignore
+.DS_Store export-ignore
+**/.DS_Store export-ignore
+.idea/** export-ignore
+.claude/** export-ignore
+.codex/** export-ignore
+.pnpm-store/** export-ignore
+.tmp/** export-ignore
+cankao/** export-ignore
+test_durations.json export-ignore
+fan-open-source.tar.gz export-ignore

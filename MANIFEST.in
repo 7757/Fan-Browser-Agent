@@ -1,0 +1,31 @@
+include LICENSE
+include README.md
+include README.zh-CN.md
+graft skills
+graft locales
+# Bundled plugin manifests (plugin.yaml / plugin.yml). Without these the
+# PluginManager scan (fan_cli/plugins.py) finds zero plugins on installs
+# built from the sdist (e.g. Homebrew, downstream packagers). package-data
+# below covers the wheel; this covers the sdist. See #34034 / #28149.
+recursive-include plugins plugin.yaml plugin.yml
+
+# Never admit local dependencies, build products, caches, or machine-specific
+# artifacts when a source distribution is built from a developer checkout.
+prune node_modules
+prune apps/*/node_modules
+prune .venv
+prune apps/desktop/build
+prune apps/desktop/dist
+prune apps/desktop/release
+prune .pytest_cache
+prune .ruff_cache
+prune fan_agent.egg-info
+prune .idea
+prune .claude
+prune .pnpm-store
+prune .tmp
+prune cankao/browser-harness
+exclude test_durations.json
+global-exclude .DS_Store
+global-exclude __pycache__
+global-exclude *.py[cod]

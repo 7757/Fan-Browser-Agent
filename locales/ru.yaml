@@ -1,0 +1,17 @@
+# Каталог статических сообщений Fan -- Русский
+# See locales/en.yaml for the source of truth; keep keys in sync.
+
+approval:
+  dangerous_header: "⚠️  ОПАСНАЯ КОМАНДА: {description}"
+  choose_long:     "      [o]один раз  |  [s]сеанс  |  [a]всегда  |  [d]отклонить"
+  choose_short:    "      [o]один раз  |  [s]сеанс  |  [d]отклонить"
+  prompt_long:     "      Выбор [o/s/a/D]: "
+  prompt_short:    "      Выбор [o/s/D]: "
+  timeout:         "      ⏱ Время ожидания истекло — команда отклонена"
+  allowed_once:    "      ✓ Разрешено один раз"
+  allowed_session: "      ✓ Разрешено для этого сеанса"
+  allowed_always:  "      ✓ Добавлено в постоянный список разрешённых"
+  denied:          "      ✗ Отклонено"
+  cancelled:       "      ✗ Отменено"
+  blocklist_message: "Эта команда находится в безусловном списке блокировки и не может быть одобрена."
+

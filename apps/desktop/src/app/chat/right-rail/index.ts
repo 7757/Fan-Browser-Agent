@@ -1,0 +1,7 @@
+export {
+  ChatPreviewRail,
+  PREVIEW_RAIL_MAX_WIDTH,
+  PREVIEW_RAIL_MIN_WIDTH,
+  PREVIEW_RAIL_MIN_WIDTH_PX,
+  PREVIEW_RAIL_PANE_WIDTH
+} from './preview'

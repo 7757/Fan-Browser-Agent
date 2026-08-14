@@ -1,0 +1,17 @@
+# Catalogo dei messaggi statici di Fan -- Italiano
+# See locales/en.yaml for the source of truth; keep keys in sync.
+
+approval:
+  dangerous_header: "⚠️  COMANDO PERICOLOSO: {description}"
+  choose_long:     "      [o]una volta  |  [s]essione  |  [a]sempre  |  [d]nega"
+  choose_short:    "      [o]una volta  |  [s]essione  |  [d]nega"
+  prompt_long:     "      Scelta [o/s/a/D]: "
+  prompt_short:    "      Scelta [o/s/D]: "
+  timeout:         "      ⏱ Tempo scaduto — comando negato"
+  allowed_once:    "      ✓ Consentito una volta"
+  allowed_session: "      ✓ Consentito per questa sessione"
+  allowed_always:  "      ✓ Aggiunto alla lista permessi permanente"
+  denied:          "      ✗ Negato"
+  cancelled:       "      ✗ Annullato"
+  blocklist_message: "Questo comando è nella lista di blocco incondizionata e non può essere approvato."
+

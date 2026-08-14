@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>行为验证 — 拖动滑块</title>
+<!-- 独立页面:文案刻意包含「拖动滑块」——runtime 行为型检测的触发词,
+     用于 E2E 验收「行为型验证码 → 挂起 agent 请用户接管」这条路径。 -->
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f4f6fa; color: #1d2430;
+    display: grid; place-items: center; min-height: 100dvh; padding: 24px;
+  }
+  .card {
+    background: #fff; border: 1px solid #e3e8f0; border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(29, 41, 66, .08);
+    padding: 28px; width: min(480px, 100%);
+  }
+  h1 { font-size: 18px; margin-bottom: 6px; }
+  p.desc { color: #5c6675; font-size: 13px; margin-bottom: 18px; }
+  .slider-track {
+    position: relative; height: 44px; border-radius: 10px;
+    background: #eef1f6; border: 1px solid #dde3ec; overflow: hidden;
+    user-select: none; touch-action: none;
+  }
+  .slider-fill {
+    position: absolute; inset: 0 auto 0 0; width: 0;
+    background: #dbe7ff; transition: background .2s;
+  }
+  .slider-track.done .slider-fill { background: #c4eed4; }
+  .slider-text {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: 13px; color: #8a93a3; pointer-events: none;
+  }
+  .slider-handle {
+    position: absolute; top: 0; left: 0; width: 52px; height: 100%;
+    background: #fff; border: 1px solid #cfd7e4; border-radius: 10px;
+    display: grid; place-items: center; font-size: 16px; color: #5c6675;
+    cursor: grab; box-shadow: 0 2px 6px rgba(29, 41, 66, .12);
+  }
+  .slider-track.done .slider-handle { color: #16794c; cursor: default; }
+  .result { margin-top: 14px; font-size: 13px; min-height: 20px; }
+  .result.ok { color: #16794c; }
+  .result.err { color: #c2323a; }
+  a.back { display: inline-block; margin-top: 18px; font-size: 12.5px; color: #2563eb; }
+</style>
+</head>
+<body>
+<main class="card">
+  <h1>行为验证</h1>
+  <p class="desc">安全验证:请拖动滑块到最右侧完成验证。此步骤需要真人操作。</p>
+  <div class="slider-track" id="slider-track">
+    <div class="slider-fill" id="slider-fill"></div>
+    <div class="slider-text" id="slider-text">按住并拖动滑块到最右侧</div>
+    <div class="slider-handle" id="slider-handle">→</div>
+  </div>
+  <div class="result" id="slider-result" role="status"></div>
+  <a class="back" href="/">← 返回测试站首页</a>
+</main>
+<script>
+(() => {
+  const track = document.getElementById('slider-track');
+  const handle = document.getElementById('slider-handle');
+  const fill = document.getElementById('slider-fill');
+  const text = document.getElementById('slider-text');
+  const result = document.getElementById('slider-result');
+  let dragging = false;
+  let startX = 0;
+  let done = false;
+
+  const maxOffset = () => track.clientWidth - handle.offsetWidth;
+
+  function setOffset(x) {
+    handle.style.left = x + 'px';
+    fill.style.width = (x + handle.offsetWidth) + 'px';
+  }
+
+  function showResult(ok, message) {
+    result.className = 'result ' + (ok ? 'ok' : 'err');
+    result.textContent = (ok ? '✅ ' : '❌ ') + message;
+  }
+
+  handle.addEventListener('pointerdown', (e) => {
+    if (done) return;
+    dragging = true;
+    startX = e.clientX - handle.offsetLeft;
+    handle.setPointerCapture(e.pointerId);
+  });
+
+  handle.addEventListener('pointermove', (e) => {
+    if (!dragging || done) return;
+    const x = Math.min(Math.max(0, e.clientX - startX), maxOffset());
+    setOffset(x);
+  });
+
+  handle.addEventListener('pointerup', () => {
+    if (!dragging || done) return;
+    dragging = false;
+    // 允许 2px 误差,拖到最右侧即验证通过
+    if (handle.offsetLeft >= maxOffset() - 2) {
+      done = true;
+      track.classList.add('done');
+      handle.textContent = '✓';
+      text.textContent = '';
+      setOffset(maxOffset());
+      showResult(true, '行为验证通过');
+    } else {
+      // 未拖满则回弹归零
+      setOffset(0);
+      showResult(false, '未拖动到最右侧,请重试');
+    }
+  });
+})();
+</script>
+</body>
+</html>

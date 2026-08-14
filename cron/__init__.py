@@ -1,0 +1,37 @@
+"""
+Cron job scheduling system for Fan Agent.
+
+This module provides scheduled task execution, allowing the agent to:
+- Run automated tasks on schedules (cron expressions, intervals, one-shot)
+- Self-schedule reminders and follow-up tasks
+- Execute tasks in isolated sessions (no prior context)
+
+Cron jobs are executed automatically while the desktop backend is running.
+A file lock prevents duplicate execution if multiple processes overlap.
+"""
+
+from cron.jobs import (
+    create_job,
+    get_job,
+    list_jobs,
+    remove_job,
+    update_job,
+    pause_job,
+    resume_job,
+    trigger_job,
+    JOBS_FILE,
+)
+from cron.scheduler import tick
+
+__all__ = [
+    "create_job",
+    "get_job", 
+    "list_jobs",
+    "remove_job",
+    "update_job",
+    "pause_job",
+    "resume_job",
+    "trigger_job",
+    "tick",
+    "JOBS_FILE",
+]

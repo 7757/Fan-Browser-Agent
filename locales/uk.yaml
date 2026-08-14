@@ -1,0 +1,17 @@
+# Каталог статичних повідомлень Fan -- Українська
+# See locales/en.yaml for the source of truth; keep keys in sync.
+
+approval:
+  dangerous_header: "⚠️  НЕБЕЗПЕЧНА КОМАНДА: {description}"
+  choose_long:     "      [o]один раз  |  [s]сеанс  |  [a]завжди  |  [d]відхилити"
+  choose_short:    "      [o]один раз  |  [s]сеанс  |  [d]відхилити"
+  prompt_long:     "      Вибір [o/s/a/D]: "
+  prompt_short:    "      Вибір [o/s/D]: "
+  timeout:         "      ⏱ Час очікування вичерпано — команду відхилено"
+  allowed_once:    "      ✓ Дозволено один раз"
+  allowed_session: "      ✓ Дозволено для цього сеансу"
+  allowed_always:  "      ✓ Додано до постійного списку дозволених команд"
+  denied:          "      ✗ Відхилено"
+  cancelled:       "      ✗ Скасовано"
+  blocklist_message: "Ця команда є в безумовному списку блокування, її не можна схвалити."
+

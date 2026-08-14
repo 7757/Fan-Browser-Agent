@@ -1,0 +1,17 @@
+# Fan statiese boodskap-katalogus -- Afrikaans
+# See locales/en.yaml for the source of truth; keep keys in sync.
+
+approval:
+  dangerous_header: "⚠️  GEVAARLIKE OPDRAG: {description}"
+  choose_long:     "      [o]eenmalig  |  [s]sessie  |  [a]altyd  |  [d]weier"
+  choose_short:    "      [o]eenmalig  |  [s]sessie  |  [d]weier"
+  prompt_long:     "      Keuse [o/s/a/D]: "
+  prompt_short:    "      Keuse [o/s/D]: "
+  timeout:         "      ⏱ Tyd verstreke - opdrag word geweier"
+  allowed_once:    "      ✓ Eenmalig toegelaat"
+  allowed_session: "      ✓ Vir hierdie sessie toegelaat"
+  allowed_always:  "      ✓ By permanente toelaatlys gevoeg"
+  denied:          "      ✗ Geweier"
+  cancelled:       "      ✗ Gekanselleer"
+  blocklist_message: "Hierdie opdrag is op die onvoorwaardelike blokkeerlys en kan nie goedgekeur word nie."
+

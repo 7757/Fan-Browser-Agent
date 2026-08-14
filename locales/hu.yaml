@@ -1,0 +1,17 @@
+# Fan statikus üzenetkatalógus -- Magyar
+# See locales/en.yaml for the source of truth; keep keys in sync.
+
+approval:
+  dangerous_header: "⚠️  VESZÉLYES PARANCS: {description}"
+  choose_long:     "      [o]egyszer  |  [s]munkamenet  |  [a]mindig  |  [d]elutasít"
+  choose_short:    "      [o]egyszer  |  [s]munkamenet  |  [d]elutasít"
+  prompt_long:     "      Választás [o/s/a/D]: "
+  prompt_short:    "      Választás [o/s/D]: "
+  timeout:         "      ⏱ Időtúllépés - parancs elutasítva"
+  allowed_once:    "      ✓ Egyszer engedélyezve"
+  allowed_session: "      ✓ Engedélyezve ehhez a munkamenethez"
+  allowed_always:  "      ✓ Hozzáadva az állandó engedélylistához"
+  denied:          "      ✗ Elutasítva"
+  cancelled:       "      ✗ Megszakítva"
+  blocklist_message: "Ez a parancs a feltétel nélküli tiltólistán van, és nem hagyható jóvá."
+
