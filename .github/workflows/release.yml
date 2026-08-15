@@ -26,6 +26,7 @@ jobs:
             os: macos-15
             script: dist:mac
             arch: arm64
+            native_build_dependencies: '@rolldown/binding-darwin-arm64@1.1.4 @tailwindcss/oxide-darwin-arm64@4.3.2 @esbuild/darwin-arm64@0.28.1'
             artifact_paths: |
               apps/desktop/release/*.dmg
               apps/desktop/release/*.zip
@@ -36,6 +37,7 @@ jobs:
             os: macos-15-intel
             script: dist:mac
             arch: x64
+            native_build_dependencies: '@rolldown/binding-darwin-x64@1.1.4 @tailwindcss/oxide-darwin-x64@4.3.2 @esbuild/darwin-x64@0.28.1'
             artifact_paths: |
               apps/desktop/release/*.dmg
               apps/desktop/release/*.zip
@@ -46,6 +48,7 @@ jobs:
             os: windows-2022
             script: dist:win
             arch: x64
+            native_build_dependencies: '@rolldown/binding-win32-x64-msvc@1.1.4 @tailwindcss/oxide-win32-x64-msvc@4.3.2 @esbuild/win32-x64@0.28.1'
             artifact_paths: |
               apps/desktop/release/*.exe
               apps/desktop/release/*.msi
@@ -56,6 +59,7 @@ jobs:
             os: ubuntu-22.04
             script: dist:linux
             arch: x64
+            native_build_dependencies: '@rolldown/binding-linux-x64-gnu@1.1.4 @tailwindcss/oxide-linux-x64-gnu@4.3.2 @esbuild/linux-x64@0.28.1'
             artifact_paths: |
               apps/desktop/release/*.AppImage
               apps/desktop/release/*.deb
@@ -101,6 +105,12 @@ jobs:
 
       - name: Install Node.js dependencies
         run: npm ci
+
+      # npm/cli#4828 can omit optional native packages for platforms other
+      # than the one that originally wrote package-lock.json. Install the
+      # three build-time bindings explicitly without changing the lockfile.
+      - name: Install platform build bindings
+        run: npm install --no-save --package-lock=false ${{ matrix.native_build_dependencies }}
 
       - name: Build desktop packages
         run: npm --prefix apps/desktop run ${{ matrix.script }} -- --${{ matrix.arch }} --publish never
