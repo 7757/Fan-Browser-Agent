@@ -103,16 +103,36 @@ jobs:
           test "$root_version" = "$package_version"
           test -f "apps/desktop/release-notes/$package_version.md"
 
+      - name: Resolve checked-out release commit
+        id: release-ref
+        shell: bash
+        run: echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Install Node.js dependencies
         run: npm ci
 
       # npm/cli#4828 can omit optional native packages for platforms other
-      # than the one that originally wrote package-lock.json. Install the
-      # three build-time bindings explicitly without changing the lockfile.
+      # than the one that originally wrote package-lock.json. Resolve the
+      # three bindings in isolation, then copy only those packages into the
+      # locked install so npm cannot re-resolve or prune the project tree.
       - name: Install platform build bindings
-        run: npm install --no-save --package-lock=false --legacy-peer-deps ${{ matrix.native_build_dependencies }}
+        shell: bash
+        run: |
+          native_root="$RUNNER_TEMP/fan-native-bindings"
+          mkdir -p "$native_root"
+          npm install \
+            --prefix "$native_root" \
+            --no-save \
+            --package-lock=false \
+            --ignore-scripts \
+            --legacy-peer-deps \
+            ${{ matrix.native_build_dependencies }}
+          cp -R "$native_root/node_modules/." node_modules/
 
       - name: Build desktop packages
+        env:
+          GITHUB_REF_NAME: ${{ env.RELEASE_TAG }}
+          GITHUB_SHA: ${{ steps.release-ref.outputs.commit }}
         run: npm --prefix apps/desktop run ${{ matrix.script }} -- --${{ matrix.arch }} --publish never
 
       - name: Upload build output
