@@ -174,7 +174,7 @@ jobs:
           done < <(
             find release-artifacts -type f \( \
               -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' -o \
-              -name '*.AppImage' -o -name '*.deb' -o -name '*.rpm' -o -name '*.blockmap'
+              -name '*.AppImage' -o -name '*.deb' -o -name '*.rpm' -o -name '*.blockmap' \
             \) -print0
           )
 
