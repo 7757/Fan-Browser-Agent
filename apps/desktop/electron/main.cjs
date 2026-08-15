@@ -1265,6 +1265,12 @@ function writeFileAtomic(targetPath, data, encoding) {
 }
 
 const OFFICIAL_SITE_URL = 'https://fandcode.com'
+const OFFICIAL_RELEASES_URL = 'https://github.com/7757/Fan-Browser-Agent/releases'
+
+function githubReleaseUrl(version) {
+  const normalized = String(version || '').trim().replace(/^v/i, '')
+  return normalized ? `${OFFICIAL_RELEASES_URL}/tag/v${encodeURIComponent(normalized)}` : `${OFFICIAL_RELEASES_URL}/latest`
+}
 
 function emitUpdateProgress(payload) {
   const merged = { stage: 'idle', message: '', percent: null, error: null, ...payload, at: Date.now() }
@@ -1380,9 +1386,10 @@ async function applyUpdates() {
     }
 
     if (IS_MAC) {
-      const dmg = (info.files || []).map(file => String(file.url || '')).find(url => url.toLowerCase().endsWith('.dmg'))
-      const feed = String(updater.getFeedURL?.() || '').replace(/\/+$/, '')
-      const url = dmg && feed ? `${feed}/${dmg}` : `${OFFICIAL_SITE_URL}/#download`
+      // Unsigned preview builds cannot be replaced safely through Squirrel.Mac.
+      // Keep update discovery automatic, then hand installation off to the
+      // canonical GitHub release page until Apple signing is configured.
+      const url = githubReleaseUrl(info.version)
       await shell.openExternal(url)
       emitUpdateProgress({ stage: 'manual', message: url, percent: null })
       rememberLog(`[updates] macOS manual update; opened ${url} for v${info.version}`)
@@ -1702,7 +1709,7 @@ async function ensureRuntime(backend) {
   if (backend.kind === 'backend-missing') {
     const missingError = new Error(
       IS_PACKAGED
-        ? 'Fan 后端资源缺失或已损坏（安装包不完整）。请从 https://fandcode.com 重新下载并安装 Fan。'
+        ? `Fan 后端资源缺失或已损坏（安装包不完整）。请从 ${OFFICIAL_RELEASES_URL}/latest 重新下载并安装 Fan。`
         : '未找到 Fan 后端。开发模式请设置 FAN_DESKTOP_FAN_ROOT 指向源码检出（或在仓库内运行 npm run dev）后重启。'
     )
     missingError.isBootstrapFailure = true

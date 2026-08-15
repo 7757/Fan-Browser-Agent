@@ -94,7 +94,7 @@ export function UpdatesOverlay() {
 
         {phase === 'manual' && (
           <ManualView
-            command={apply.command ?? '请从 Fan 官网下载并安装最新版本。'}
+            command={apply.command ?? '请从 Fan-Browser-Agent 的 GitHub Releases 下载并安装最新版本。'}
             onDone={() => handleClose(false)}
           />
         )}

@@ -254,7 +254,7 @@ export async function applyUpdates(opts: DesktopUpdateApplyOptions = {}): Promis
     // dedicated manual state so the overlay shows the URL/instruction instead
     // of a dead retry loop.
     if (result?.manual) {
-      const instruction = result.command ?? '请从 Fan 官网下载并安装最新版本。'
+      const instruction = result.command ?? '请从 Fan-Browser-Agent 的 GitHub Releases 下载并安装最新版本。'
       $updateApply.set({
         ...IDLE,
         applying: false,

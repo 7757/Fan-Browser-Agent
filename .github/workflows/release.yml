@@ -1,0 +1,192 @@
+name: Release desktop
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to build, for example v0.4.3
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS Apple Silicon
+            id: macos-arm64
+            os: macos-15
+            script: dist:mac
+            arch: arm64
+            artifact_paths: |
+              apps/desktop/release/*.dmg
+              apps/desktop/release/*.zip
+              apps/desktop/release/latest-mac.yml
+              apps/desktop/release/*.blockmap
+          - name: macOS Intel
+            id: macos-x64
+            os: macos-15-intel
+            script: dist:mac
+            arch: x64
+            artifact_paths: |
+              apps/desktop/release/*.dmg
+              apps/desktop/release/*.zip
+              apps/desktop/release/latest-mac.yml
+              apps/desktop/release/*.blockmap
+          - name: Windows x64
+            id: windows-x64
+            os: windows-2022
+            script: dist:win
+            arch: x64
+            artifact_paths: |
+              apps/desktop/release/*.exe
+              apps/desktop/release/*.msi
+              apps/desktop/release/latest.yml
+              apps/desktop/release/*.blockmap
+          - name: Linux x64
+            id: linux-x64
+            os: ubuntu-22.04
+            script: dist:linux
+            arch: x64
+            artifact_paths: |
+              apps/desktop/release/*.AppImage
+              apps/desktop/release/*.deb
+              apps/desktop/release/*.rpm
+              apps/desktop/release/latest-linux*.yml
+              apps/desktop/release/*.blockmap
+    runs-on: ${{ matrix.os }}
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22.12.0'
+          cache: npm
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.11.26'
+          enable-cache: true
+
+      - name: Install Linux packaging tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends ca-certificates dpkg-dev fakeroot file libarchive-tools rpm xz-utils
+
+      - name: Validate release version
+        shell: bash
+        run: |
+          package_version="$(node -p "require('./apps/desktop/package.json').version")"
+          root_version="$(node -p "require('./package.json').version")"
+          test "$RELEASE_TAG" = "v$package_version"
+          test "$root_version" = "$package_version"
+          test -f "apps/desktop/release-notes/$package_version.md"
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Build desktop packages
+        run: npm --prefix apps/desktop run ${{ matrix.script }} -- --${{ matrix.arch }} --publish never
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.id }}
+          path: ${{ matrix.artifact_paths }}
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: Download build outputs
+        uses: actions/download-artifact@v7
+        with:
+          path: release-artifacts
+
+      - name: Assemble release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-upload
+
+          while IFS= read -r -d '' asset; do
+            cp "$asset" release-upload/
+          done < <(
+            find release-artifacts -type f \( \
+              -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.msi' -o \
+              -name '*.AppImage' -o -name '*.deb' -o -name '*.rpm' -o -name '*.blockmap'
+            \) -print0
+          )
+
+          cp release-artifacts/release-macos-arm64/latest-mac.yml release-upload/latest-mac.yml
+          cp release-artifacts/release-windows-x64/latest.yml release-upload/latest.yml
+          find release-artifacts/release-linux-x64 -maxdepth 1 -name 'latest-linux*.yml' -exec cp {} release-upload/ \;
+
+          compgen -G 'release-upload/*.dmg' >/dev/null
+          compgen -G 'release-upload/*.exe' >/dev/null
+          compgen -G 'release-upload/*.AppImage' >/dev/null
+          test -f release-upload/latest-mac.yml
+          test -f release-upload/latest.yml
+          compgen -G 'release-upload/latest-linux*.yml' >/dev/null
+
+          (cd release-upload && sha256sum * > SHA256SUMS.txt)
+          find release-upload -maxdepth 1 -type f -printf '%f\n' | sort
+
+      - name: Create or update GitHub Release
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#v}"
+          notes_file="apps/desktop/release-notes/$version.md"
+          test -f "$notes_file"
+          mapfile -d '' assets < <(find release-upload -maxdepth 1 -type f -print0)
+
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "${assets[@]}" --clobber --repo "$GITHUB_REPOSITORY"
+            gh release edit "$RELEASE_TAG" \
+              --title "Fan $version" \
+              --notes-file "$notes_file" \
+              --draft=false \
+              --prerelease=false \
+              --latest \
+              --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$RELEASE_TAG" "${assets[@]}" \
+              --verify-tag \
+              --title "Fan $version" \
+              --notes-file "$notes_file" \
+              --latest \
+              --repo "$GITHUB_REPOSITORY"
+          fi
+
+          echo "Published [$RELEASE_TAG](https://github.com/$GITHUB_REPOSITORY/releases/tag/$RELEASE_TAG)" >> "$GITHUB_STEP_SUMMARY"

@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="https://github.com/7757/Fan-Browser-Agent/releases/latest">Download</a> ·
   <a href="https://fandcode.com">Website</a> ·
   <a href="https://fandcode.com/scenarios">Use cases</a> ·
   <a href="SECURITY.md">Security</a> ·
@@ -63,6 +64,21 @@ Those constraints shaped the project:
 Fan was first built to help its author get real work done. It is now open source so people who also need a visible browser, human confirmation, and local tool access can use it, change it, and help explore what browser agents should become.
 
 ## Quick start
+
+### Download the desktop app
+
+Download the latest build from [GitHub Releases](https://github.com/7757/Fan-Browser-Agent/releases/latest):
+
+| Platform | Package |
+|---|---|
+| macOS Apple Silicon | `Fan-0.4.3-mac-arm64.dmg` |
+| macOS Intel | `Fan-0.4.3-mac-x64.dmg` |
+| Windows x64 | `Fan-0.4.3-win-x64.exe` (recommended) or MSI |
+| Linux x64 | AppImage, DEB, or RPM |
+
+Version 0.4.3 is an unsigned early preview. macOS Gatekeeper or Windows SmartScreen may show an unknown-developer warning. Download only from this repository's Release page and compare the file against `SHA256SUMS.txt`. Packaged builds check this same GitHub Releases feed for updates.
+
+### Run from source
 
 Requirements:
 
@@ -136,6 +152,7 @@ The open-source build does not require a Fan product account. Electron, the Pyth
 | Model requests | Sent directly to the provider or custom endpoint you configure |
 | Browser traffic | Occurs when you or the agent opens pages, downloads resources, or performs a web task |
 | MCP, plugins, and external tools | Connect only after you configure or enable the corresponding capability |
+| Application updates | Checked against this repository's public GitHub Releases feed |
 | Product analytics, support conversations, and diagnostic bundles | The open-source build does not upload them automatically to a Fan-operated service |
 
 Fan can run terminal commands, read and write local files, and interact with websites where you are signed in. Treat it as a local application with your operating-system permissions, not as a security sandbox.

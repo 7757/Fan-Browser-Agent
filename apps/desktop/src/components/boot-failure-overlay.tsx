@@ -88,7 +88,7 @@ export function BootFailureOverlay() {
             打开日志
           </button>
         </div>
-        <p className="fan-bootfail-hint">若多次重试仍失败，请从官网重新下载并安装最新版 Fan。</p>
+        <p className="fan-bootfail-hint">若多次重试仍失败，请从 GitHub Releases 重新下载并安装最新版 Fan。</p>
         {detail ? (
           <>
             <button className="fan-bootfail-toggle" onClick={() => setShowDetail(v => !v)} type="button">

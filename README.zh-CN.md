@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="README.md">English</a> ·
+  <a href="https://github.com/7757/Fan-Browser-Agent/releases/latest">下载</a> ·
   <a href="https://fandcode.com">官方网站</a> ·
   <a href="https://fandcode.com/scenarios">使用场景</a> ·
   <a href="SECURITY.md">安全政策</a> ·
@@ -63,6 +64,21 @@ Fan 最初来自一个很个人的需求：做一款足够简单的桌面 AI 助
 Fan 最先是为了帮助作者自己完成工作而开发的。现在把它开源，希望需要可见浏览器、人工确认和本地工具协作的人，可以直接使用、修改，并一起讨论浏览器智能体应该如何工作。
 
 ## 快速开始
+
+### 下载桌面应用
+
+请从 [GitHub Releases](https://github.com/7757/Fan-Browser-Agent/releases/latest) 下载最新版本：
+
+| 平台 | 安装包 |
+|---|---|
+| macOS Apple Silicon | `Fan-0.4.3-mac-arm64.dmg` |
+| macOS Intel | `Fan-0.4.3-mac-x64.dmg` |
+| Windows x64 | 推荐 `Fan-0.4.3-win-x64.exe`，也提供 MSI |
+| Linux x64 | AppImage、DEB 或 RPM |
+
+0.4.3 是尚未进行商业代码签名的早期预览版，macOS Gatekeeper 或 Windows SmartScreen 可能提示未知开发者。请只从本仓库 Release 页面下载，并使用 `SHA256SUMS.txt` 核对文件。安装版后续也会从同一个 GitHub Releases 源检查更新。
+
+### 从源码启动
 
 环境要求：
 
@@ -136,6 +152,7 @@ Provider 选择和模型名称保存在 `$FAN_HOME/config.yaml`，API Key 保存
 | 模型请求 | 直接发送给你配置的 Provider 或自定义端点 |
 | 浏览器网络 | 仅在你或 Agent 打开网页、下载资源或执行网页任务时发生 |
 | MCP、插件和外部工具 | 仅在你配置或启用对应能力后连接其目标服务 |
+| 应用更新 | 从本仓库公开的 GitHub Releases 源检查 |
 | 产品分析、支持对话和诊断包 | 开源版不会自动上传到 Fan 运营的服务 |
 
 Fan 可以执行终端命令、读写本地文件并操作已登录的网页，因此它应被视为拥有当前操作系统用户权限的本地应用，而不是安全沙箱。
