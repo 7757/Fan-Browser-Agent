@@ -26,7 +26,7 @@ jobs:
             os: macos-15
             script: dist:mac
             arch: arm64
-            native_build_dependencies: '@rolldown/binding-darwin-arm64@1.1.4 @tailwindcss/oxide-darwin-arm64@4.3.2 @esbuild/darwin-arm64@0.28.1'
+            native_build_dependencies: '@rolldown/binding-darwin-arm64@1.1.4 @tailwindcss/oxide-darwin-arm64@4.3.2 @esbuild/darwin-arm64@0.28.1 lightningcss-darwin-arm64@1.32.0 @rollup/rollup-darwin-arm64@4.62.2'
             artifact_paths: |
               apps/desktop/release/*.dmg
               apps/desktop/release/*.zip
@@ -37,7 +37,7 @@ jobs:
             os: macos-15-intel
             script: dist:mac
             arch: x64
-            native_build_dependencies: '@rolldown/binding-darwin-x64@1.1.4 @tailwindcss/oxide-darwin-x64@4.3.2 @esbuild/darwin-x64@0.28.1'
+            native_build_dependencies: '@rolldown/binding-darwin-x64@1.1.4 @tailwindcss/oxide-darwin-x64@4.3.2 @esbuild/darwin-x64@0.28.1 lightningcss-darwin-x64@1.32.0 @rollup/rollup-darwin-x64@4.62.2'
             artifact_paths: |
               apps/desktop/release/*.dmg
               apps/desktop/release/*.zip
@@ -48,7 +48,7 @@ jobs:
             os: windows-2022
             script: dist:win
             arch: x64
-            native_build_dependencies: '@rolldown/binding-win32-x64-msvc@1.1.4 @tailwindcss/oxide-win32-x64-msvc@4.3.2 @esbuild/win32-x64@0.28.1'
+            native_build_dependencies: '@rolldown/binding-win32-x64-msvc@1.1.4 @tailwindcss/oxide-win32-x64-msvc@4.3.2 @esbuild/win32-x64@0.28.1 lightningcss-win32-x64-msvc@1.32.0 @rollup/rollup-win32-x64-msvc@4.62.2'
             artifact_paths: |
               apps/desktop/release/*.exe
               apps/desktop/release/*.msi
@@ -59,7 +59,7 @@ jobs:
             os: ubuntu-22.04
             script: dist:linux
             arch: x64
-            native_build_dependencies: '@rolldown/binding-linux-x64-gnu@1.1.4 @tailwindcss/oxide-linux-x64-gnu@4.3.2 @esbuild/linux-x64@0.28.1'
+            native_build_dependencies: '@rolldown/binding-linux-x64-gnu@1.1.4 @tailwindcss/oxide-linux-x64-gnu@4.3.2 @esbuild/linux-x64@0.28.1 lightningcss-linux-x64-gnu@1.32.0 @rollup/rollup-linux-x64-gnu@4.62.2'
             artifact_paths: |
               apps/desktop/release/*.AppImage
               apps/desktop/release/*.deb
@@ -113,7 +113,7 @@ jobs:
 
       # npm/cli#4828 can omit optional native packages for platforms other
       # than the one that originally wrote package-lock.json. Resolve the
-      # three bindings in isolation, then copy only those packages into the
+      # platform bindings in isolation, then copy only those packages into the
       # locked install so npm cannot re-resolve or prune the project tree.
       - name: Install platform build bindings
         shell: bash
