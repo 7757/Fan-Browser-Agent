@@ -79,12 +79,7 @@ const EXCLUDE_FILE_NAMES = new Set([
   'find-visual-log.jsonl',
   'grounding_debug.jsonl'
 ])
-const BUNDLED_PACKAGE_TEST_DIR_SUFFIXES = [
-  'site-packages/sniffio/_tests',
-  'site-packages/setuptools/tests',
-  'site-packages/setuptools/_distutils/tests',
-  'site-packages/setuptools/_distutils/compilers/C/tests'
-]
+const BUNDLED_PACKAGE_TEST_DIR_NAMES = new Set(['test', 'tests', '_tests'])
 
 function isExcludedSourceFileName(name) {
   const unrotatedName = name.replace(/\.\d+$/, '')
@@ -213,12 +208,9 @@ function pruneBundledPackageTests(root) {
   const walk = directory => {
     for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
       const target = path.join(directory, entry.name)
-      const relative = path.relative(root, target).split(path.sep).join('/')
+      const lowerName = entry.name.toLowerCase()
 
-      if (
-        entry.isDirectory() &&
-        BUNDLED_PACKAGE_TEST_DIR_SUFFIXES.some(suffix => relative.endsWith(suffix))
-      ) {
+      if (entry.isDirectory() && BUNDLED_PACKAGE_TEST_DIR_NAMES.has(lowerName)) {
         fs.rmSync(target, { recursive: true, force: true })
         removedDirectories += 1
         continue
@@ -230,13 +222,7 @@ function pruneBundledPackageTests(root) {
       if (!entry.isFile()) continue
 
       const basename = entry.name
-      const isFireTest =
-        relative.includes('site-packages/fire/') &&
-        (basename.endsWith('_test.py') || /^test_components.*\.py$/.test(basename))
-      const isKnownTestHelper =
-        relative.endsWith('site-packages/annotated_types/test_cases.py') ||
-        relative.endsWith('site-packages/markdown/test_tools.py')
-      if (isFireTest || isKnownTestHelper) {
+      if (/^(test_[^/]+|[^/]+_test)\.py$/i.test(basename)) {
         fs.rmSync(target, { force: true })
         removedFiles += 1
       }
