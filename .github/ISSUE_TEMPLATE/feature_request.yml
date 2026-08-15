@@ -1,0 +1,40 @@
+name: Feature request
+description: Propose an improvement to a real Fan workflow.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the workflow and who encounters the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Explain what Fan should do and what a successful outcome looks like.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Browser and human handoff
+        - Model providers
+        - Desktop interface
+        - Skills, MCP, or plugins
+        - Scheduled tasks
+        - Local runtime and tools
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional workarounds or related tools you have tried.

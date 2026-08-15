@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.26"
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Install Python dependencies
+        run: uv sync --locked --extra dev
+
+      - name: Lint Python
+        run: uv run --locked ruff check .
+
+      - name: Test Python
+        run: bash scripts/run_tests.sh -j 4
+
+  desktop:
+    name: Desktop
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "22.23.2"
+          cache: npm
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Type-check desktop
+        run: npm --prefix apps/desktop run type-check
+
+      - name: Lint desktop
+        run: npm --prefix apps/desktop run lint

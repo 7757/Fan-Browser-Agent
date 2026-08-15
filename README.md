@@ -208,6 +208,8 @@ Desktop packages are built with `dist:mac`, `dist:win`, or `dist:linux` from `ap
 
 Use [Issues](https://github.com/7757/Fan-Browser-Agent/issues) to report problems or propose features. Pull requests are welcome. Describe the purpose and impact of your change, list the checks you completed, and include a screenshot or recording for visible UI changes.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow and [SUPPORT.md](SUPPORT.md) for help and reporting routes. Maintainers can find the release procedure in [docs/RELEASING.md](docs/RELEASING.md).
+
 ## Troubleshooting
 
 ### First launch is stuck while installing dependencies

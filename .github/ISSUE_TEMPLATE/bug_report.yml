@@ -1,0 +1,76 @@
+name: Bug report
+description: Report a reproducible problem in Fan.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Remove API keys, cookies, tokens, personal data, private URLs, and private page content from everything you submit.
+  - type: input
+    id: version
+    attributes:
+      label: Fan version
+      description: Use the version shown in About, or the commit hash when running from source.
+      placeholder: 0.4.3 or commit 38d90de
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating system
+      options:
+        - macOS Apple Silicon
+        - macOS Intel
+        - Windows x64
+        - Linux x64
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: installation
+    attributes:
+      label: Installation method
+      options:
+        - GitHub Release installer
+        - Source checkout
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: provider
+    attributes:
+      label: Model provider and model
+      description: Do not include the API key.
+      placeholder: DeepSeek / deepseek-v4-flash
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Explain the actual behavior and the behavior you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Relevant logs or screenshots
+      description: Paste only the smallest useful, fully redacted excerpt. You can leave this empty.
+      render: shell
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed credentials, cookies, tokens, personal data, private URLs, and private page content.
+          required: true

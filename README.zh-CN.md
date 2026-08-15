@@ -208,6 +208,8 @@ npm --prefix apps/desktop run lint
 
 欢迎通过 [Issues](https://github.com/7757/Fan-Browser-Agent/issues) 报告问题或提出功能建议，也欢迎提交 Pull Request。提交代码时，请说明修改目的、影响范围以及你完成的检查；涉及界面变化时请附截图或录屏。
 
+贡献流程见 [CONTRIBUTING.md](CONTRIBUTING.md)，使用帮助与问题分流见 [SUPPORT.md](SUPPORT.md)，维护者发版步骤见 [docs/RELEASING.md](docs/RELEASING.md)。
+
 ## 联系作者
 
 如果你在使用 Fan 时遇到问题，或者对 browser agent、computer use、human-in-the-loop 交互和本地 AI 工具有好的想法，欢迎提交 Issue，也可以添加作者微信直接交流。
