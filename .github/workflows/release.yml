@@ -79,7 +79,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '22.12.0'
+          node-version: '22.23.2'
           cache: npm
 
       - name: Set up uv
@@ -110,7 +110,7 @@ jobs:
       # than the one that originally wrote package-lock.json. Install the
       # three build-time bindings explicitly without changing the lockfile.
       - name: Install platform build bindings
-        run: npm install --no-save --package-lock=false ${{ matrix.native_build_dependencies }}
+        run: npm install --no-save --package-lock=false --legacy-peer-deps ${{ matrix.native_build_dependencies }}
 
       - name: Build desktop packages
         run: npm --prefix apps/desktop run ${{ matrix.script }} -- --${{ matrix.arch }} --publish never
