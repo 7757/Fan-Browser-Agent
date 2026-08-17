@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 2,
+  "revision": "2026-08-15.3",
+  "providers": [
+    {
+      "id": "alibaba",
+      "nameZh": "阿里云百炼",
+      "nameEn": "Alibaba Cloud Model Studio",
+      "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "modelsPath": "/models",
+      "discoveryMode": "catalog",
+      "models": [
+        {
+          "id": "qwen3.7-plus",
+          "capabilities": ["tools", "vision", "reasoning"]
+        },
+        {
+          "id": "qwen3.6-flash",
+          "capabilities": ["tools", "vision", "reasoning"]
+        }
+      ],
+      "defaultModelHints": ["qwen3.7-plus", "qwen3.6-flash"],
+      "visionModelHints": ["qwen3.7-plus", "qwen3.6-flash"],
+      "websiteUrl": "https://www.aliyun.com/product/bailian",
+      "keyUrl": "https://bailian.console.aliyun.com/?apiKey=1#/api-key"
+    },
+    {
+      "id": "deepseek",
+      "nameZh": "DeepSeek",
+      "nameEn": "DeepSeek",
+      "baseUrl": "https://api.deepseek.com",
+      "modelsPath": "/models",
+      "discoveryMode": "models_api",
+      "models": [
+        {
+          "id": "deepseek-v4-pro",
+          "capabilities": ["tools", "reasoning"]
+        },
+        {
+          "id": "deepseek-v4-flash",
+          "capabilities": ["tools", "reasoning"]
+        }
+      ],
+      "defaultModelHints": ["deepseek-v4-pro", "deepseek-v4-flash"],
+      "visionModelHints": [],
+      "websiteUrl": "https://www.deepseek.com/",
+      "keyUrl": "https://platform.deepseek.com/api_keys"
+    },
+    {
+      "id": "openai",
+      "nameZh": "OpenAI",
+      "nameEn": "OpenAI",
+      "baseUrl": "https://api.openai.com/v1",
+      "modelsPath": "/models",
+      "discoveryMode": "models_api",
+      "models": [
+        {
+          "id": "gpt-5.6-sol",
+          "capabilities": ["tools", "vision", "reasoning"]
+        },
+        {
+          "id": "gpt-5.6-terra",
+          "capabilities": ["tools", "vision", "reasoning"]
+        },
+        {
+          "id": "gpt-5.6-luna",
+          "capabilities": ["tools", "vision", "reasoning"]
+        }
+      ],
+      "defaultModelHints": ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"],
+      "visionModelHints": ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"],
+      "websiteUrl": "https://openai.com/",
+      "keyUrl": "https://platform.openai.com/api-keys"
+    },
+    {
+      "id": "google-gemini-openai",
+      "nameZh": "Google Gemini",
+      "nameEn": "Google Gemini",
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "modelsPath": "/models",
+      "discoveryMode": "models_api",
+      "models": [
+        {
+          "id": "gemini-3.6-flash",
+          "capabilities": ["tools", "vision", "reasoning"]
+        },
+        {
+          "id": "gemini-3.5-flash-lite",
+          "capabilities": ["tools", "vision", "reasoning"]
+        }
+      ],
+      "defaultModelHints": ["gemini-3.6-flash", "gemini-3.5-flash-lite"],
+      "visionModelHints": ["gemini-3.6-flash", "gemini-3.5-flash-lite"],
+      "websiteUrl": "https://ai.google.dev/",
+      "keyUrl": "https://aistudio.google.com/app/apikey"
+    },
+    {
+      "id": "xai",
+      "nameZh": "xAI",
+      "nameEn": "xAI",
+      "baseUrl": "https://api.x.ai/v1",
+      "modelsPath": "/models",
+      "discoveryMode": "models_api",
+      "models": [
+        {
+          "id": "grok-4.5",
+          "capabilities": ["tools", "vision", "reasoning"]
+        }
+      ],
+      "defaultModelHints": ["grok-4.5"],
+      "visionModelHints": ["grok-4.5"],
+      "websiteUrl": "https://x.ai/",
+      "keyUrl": "https://console.x.ai/"
+    },
+    {
+      "id": "moonshot",
+      "nameZh": "月之暗面 Kimi",
+      "nameEn": "Moonshot AI / Kimi",
+      "baseUrl": "https://api.moonshot.cn/v1",
+      "modelsPath": "/models",
+      "discoveryMode": "models_api",
+      "models": [
+        {
+          "id": "kimi-k2.6",
+          "capabilities": ["tools", "vision", "reasoning"]
+        },
+        {
+          "id": "kimi-k2.5",
+          "capabilities": ["tools", "vision", "reasoning"]
+        }
+      ],
+      "defaultModelHints": ["kimi-k2.6", "kimi-k2.5"],
+      "visionModelHints": ["kimi-k2.6", "kimi-k2.5"],
+      "websiteUrl": "https://platform.kimi.com/",
+      "keyUrl": "https://platform.kimi.com/console/api-keys"
+    },
+    {
+      "id": "zhipu",
+      "nameZh": "智谱开放平台",
+      "nameEn": "Zhipu AI",
+      "baseUrl": "https://open.bigmodel.cn/api/paas/v4",
+      "modelsPath": "/models",
+      "discoveryMode": "catalog",
+      "models": [
+        {
+          "id": "glm-5.2",
+          "capabilities": ["tools", "reasoning"]
+        },
+        {
+          "id": "glm-5",
+          "capabilities": ["tools", "reasoning"]
+        },
+        {
+          "id": "glm-5v-turbo",
+          "capabilities": ["tools", "vision", "reasoning"]
+        }
+      ],
+      "defaultModelHints": ["glm-5.2", "glm-5", "glm-5v-turbo"],
+      "visionModelHints": ["glm-5v-turbo"],
+      "websiteUrl": "https://open.bigmodel.cn/",
+      "keyUrl": "https://open.bigmodel.cn/usercenter/proj-mgmt/apikeys"
+    },
+    {
+      "id": "minimax",
+      "nameZh": "MiniMax",
+      "nameEn": "MiniMax",
+      "baseUrl": "https://api.minimaxi.com/v1",
+      "modelsPath": "/models",
+      "discoveryMode": "models_api",
+      "models": [
+        {
+          "id": "MiniMax-M2.7",
+          "capabilities": ["tools", "reasoning"]
+        },
+        {
+          "id": "MiniMax-M2.7-highspeed",
+          "capabilities": ["tools", "reasoning"]
+        }
+      ],
+      "defaultModelHints": ["MiniMax-M2.7", "MiniMax-M2.7-highspeed"],
+      "visionModelHints": [],
+      "websiteUrl": "https://platform.minimaxi.com/",
+      "keyUrl": "https://platform.minimaxi.com/user-center/basic-information/interface-key"
+    }
+  ]
+}
