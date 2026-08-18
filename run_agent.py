@@ -131,6 +131,7 @@ from model_tools import (
     get_tool_definitions,  # noqa: F401  # re-exported for tests that mock.patch("run_agent.get_tool_definitions")
     handle_function_call,  # noqa: F401  # re-exported for tests that mock.patch("run_agent.handle_function_call")
     check_toolset_requirements,  # noqa: F401  # re-exported for tests that mock.patch("run_agent.check_toolset_requirements")
+    get_toolset_for_tool,  # noqa: F401  # re-exported for system_prompt._ra() / mock.patch("run_agent.get_toolset_for_tool")
 )
 from tools.terminal_tool import cleanup_vm
 from tools.interrupt import set_interrupt as _set_interrupt
