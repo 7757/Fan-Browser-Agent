@@ -512,7 +512,7 @@ wheels = [
 
 [[package]]
 name = "elevenlabs"
-version = "1.59.0"
+version = "2.63.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -522,9 +522,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/73/5f/01197145be5be258abdce254010eb300868b85fbf6cf1c6c1538a68caef4/elevenlabs-1.59.0.tar.gz", hash = "sha256:16e735bd594e86d415dd445d249c8cc28b09996cfd627fbc10102c0a84698859", size = 200549, upload-time = "2025-05-15T12:19:28.868Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/be/b9/81e0c61cc07bffeeba0592cd493f756b1622cb9c2f0fb5eb1278fe2851ba/elevenlabs-2.63.0.tar.gz", hash = "sha256:ad5e2beef622ee409a9c07e3951bfe1a039abfaeb04dab615bf2cc32eeabc4e2", size = 751861, upload-time = "2026-08-11T12:10:18.296Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b0/1f/eaf5dc72edad9124f16daf36b9226c57893e21280d25e94b6b5c7011c86b/elevenlabs-1.59.0-py3-none-any.whl", hash = "sha256:468145db81a0bc867708b4a8619699f75583e9481b395ec1339d0b443da771ed", size = 523205, upload-time = "2025-05-15T12:19:27.568Z" },
+    { url = "https://files.pythonhosted.org/packages/7e/3f/67a8c1ba674d20b9f24fe131defb082473a3ca4a2beb95b7ecaea99bb6ab/elevenlabs-2.63.0-py3-none-any.whl", hash = "sha256:997cc8e9f641327cd7a1db840232c0e246b99bc8ef3c777770d30283c4d737c0", size = 1979963, upload-time = "2026-08-11T12:10:16.724Z" },
 ]
 
 [[package]]
@@ -658,6 +658,7 @@ web = [
     { name = "starlette" },
     { name = "uvicorn", extra = ["standard"] },
 ]
+
 [package.metadata]
 requires-dist = [
     { name = "agent-client-protocol", marker = "extra == 'acp'", specifier = "==0.9.0" },
@@ -667,7 +668,7 @@ requires-dist = [
     { name = "croniter", specifier = "==6.0.0" },
     { name = "debugpy", marker = "extra == 'dev'", specifier = "==1.8.20" },
     { name = "edge-tts", marker = "extra == 'edge-tts'", specifier = "==7.2.7" },
-    { name = "elevenlabs", marker = "extra == 'tts-premium'", specifier = "==1.59.0" },
+    { name = "elevenlabs", marker = "extra == 'tts-premium'", specifier = "==2.63.0" },
     { name = "fan-agent", extras = ["acp"], marker = "extra == 'all'" },
     { name = "fan-agent", extras = ["acp"], marker = "extra == 'termux'" },
     { name = "fan-agent", extras = ["cli"], marker = "extra == 'all'" },
