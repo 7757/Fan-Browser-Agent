@@ -101,7 +101,7 @@
     "@electron/asar": "^4.2.1",
     "@eslint/js": "^9.39.4",
     "@types/hast": "^3.0.4",
-    "@types/node": "^24.12.2",
+    "@types/node": "^26.2.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.59.1",
